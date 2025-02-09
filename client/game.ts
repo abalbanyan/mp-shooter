@@ -7,32 +7,43 @@ import type {
 } from "../game/types";
 
 import { setupInput } from "./input";
-import { context, updateClientGameState, updateDelta } from "./context";
+import { context, updateDelta } from "./context";
 import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 
 const socket = io();
 
-let serverGameState: GameState | null = null;
-
 socket.on("connect", () => {
   if (socket.id) {
     context.id = socket.id;
+    requestAnimationFrame(gameLoop);
   }
 });
 
+/**
+ * TODO:
+ *   - interpolating position
+ */
+const updateClientGameState = (newState: GameState) => {
+  context.gameState.players = newState.players;
+};
+
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
-  serverGameState = data.gameState;
+  context.gameStateBuffer.push({
+    gameState: data.gameState,
+    timestamp: new Date().getTime(),
+  });
+  if (context.gameStateBuffer.length > 10) {
+    context.gameStateBuffer.shift();
+  }
 
-  // TODO: interpolation for player movement?
-
-  updateClientGameState(serverGameState);
+  updateClientGameState(data.gameState);
+  renderGameState(context.gameState);
 });
 
 setupInput();
 
-// Process user actions every 10ms and add them to the buffer.
-setInterval(() => {
+const gameLoop = () => {
   // If no assigned id, don't take any actions yet.
   if (!context.id) {
     return;
@@ -47,7 +58,8 @@ setInterval(() => {
   });
 
   renderGameState(context.gameState);
-}, 10);
+  requestAnimationFrame(gameLoop);
+};
 
 // Send the current input state to the server every 50ms.
 setInterval(() => {
@@ -55,6 +67,8 @@ setInterval(() => {
   if (!context.id) {
     return;
   }
+
+  console.log(context.inputBuffer.length);
 
   // Send all buffered actions to the server.
   if (context.inputBuffer.length > 0) {
@@ -64,4 +78,4 @@ setInterval(() => {
 
     context.inputBuffer = [];
   }
-}, 50);
+}, 30);

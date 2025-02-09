@@ -5,9 +5,14 @@ type ClientContext = {
   lastTime: number;
   delta: number;
   id: null | string;
-  gameState: GameState;
   keys: PlayerInput;
   inputBuffer: IOMessageInput["inputs"];
+
+  gameState: GameState;
+  gameStateBuffer: {
+    timestamp: number;
+    gameState: GameState;
+  }[];
 };
 
 export const context: ClientContext = {
@@ -19,6 +24,9 @@ export const context: ClientContext = {
   gameState: {
     players: {},
   },
+
+  gameStateBuffer: [],
+
   keys: {
     up: false,
     down: false,
@@ -26,11 +34,6 @@ export const context: ClientContext = {
     right: false,
     attack: false,
   },
-};
-
-export const updateClientGameState = (newState: GameState) => {
-  context.gameState.players = newState.players;
-  renderGameState(context.gameState);
 };
 
 export const updateDelta = () => {
