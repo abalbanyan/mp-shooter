@@ -31,15 +31,7 @@ socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
 
 setupInput();
 
-// TODO: This will be the actual game loop where we process
-// user input and add it to a inputMessage buffer in context,
-// but for now we're going to process the game loop at the same
-// interval that we send to the server.
-// setInterval(() => {
-
-// }, 10);
-
-// Send the current input state to the server every 50ms.
+// Process user actions every 10ms and add them to the buffer.
 setInterval(() => {
   // If no assigned id, don't take any actions yet.
   if (!context.id) {
@@ -48,14 +40,28 @@ setInterval(() => {
 
   updateDelta();
   playerProcessInput();
-  renderGameState(context.gameState);
 
-  socket.emit("input", {
-    inputs: [
-      {
-        delta: context.delta,
-        input: context.keys,
-      },
-    ],
-  } satisfies IOMessageInput);
+  context.inputBuffer.push({
+    delta: context.delta,
+    input: context.keys,
+  });
+
+  renderGameState(context.gameState);
+}, 10);
+
+// Send the current input state to the server every 50ms.
+setInterval(() => {
+  // If no assigned id, don't take any actions yet.
+  if (!context.id) {
+    return;
+  }
+
+  // Send all buffered actions to the server.
+  if (context.inputBuffer.length > 0) {
+    socket.emit("input", {
+      inputs: context.inputBuffer,
+    } satisfies IOMessageInput);
+
+    context.inputBuffer = [];
+  }
 }, 50);

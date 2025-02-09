@@ -1,4 +1,4 @@
-import { GameState, PlayerInput } from "../game/types";
+import { GameState, IOMessageInput, PlayerInput } from "../game/types";
 import { renderGameState } from "./render";
 
 type ClientContext = {
@@ -7,12 +7,14 @@ type ClientContext = {
   id: null | string;
   gameState: GameState;
   keys: PlayerInput;
+  inputBuffer: IOMessageInput["inputs"];
 };
 
 export const context: ClientContext = {
   lastTime: performance.now(),
   delta: 0,
 
+  inputBuffer: [],
   id: null,
   gameState: {
     players: {},
