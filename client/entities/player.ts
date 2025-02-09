@@ -1,6 +1,6 @@
 import { Direction, PlayerEntity } from "../../game/types";
 import { context } from "../context";
-import { movePlayer } from "../game";
+import { movePlayer } from "../../game/entities/player";
 
 export const PLAYER_SPEED = 200;
 
@@ -32,7 +32,7 @@ export const playerProcessInput = () => {
   const { id, keys, gameState, delta } = context;
 
   const player = gameState.players[id];
-  if (player) {
+  if (!player) {
     console.error("Missing player entity.");
     return;
   }
