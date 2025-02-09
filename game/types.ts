@@ -1,5 +1,6 @@
 export type PlayerEntity = {
   id: string;
+  name: string;
   pos: {
     x: number;
     y: number;
@@ -31,7 +32,22 @@ export type PlayerInput = {
   attack: boolean;
 };
 
-export type InputMessage = {
-  tick: number; // ?
-  input: PlayerInput;
+export type IOMessageStateUpdate = {
+  /**
+   * For simplicity, we just send the entire game state.
+   */
+  gameState: GameState;
+};
+
+export type IOMessageInput = {
+  inputs: {
+    input: PlayerInput;
+    /**
+     * I think it might be insecure to send delta, but I don't know of a better way to handle this.
+     * Perhaps we can clamp the delta on the server to prevent cheating?
+     * Then the user will rubber-band if they're lagging, but we can interpolate.
+     * https://gamedev.stackexchange.com/questions/150774/online-multiplayer-cheating-w-delta-time-movement
+     */
+    delta: number;
+  }[];
 };

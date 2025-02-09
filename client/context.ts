@@ -30,3 +30,9 @@ export const updateClientGameState = (newState: GameState) => {
   context.gameState.players = newState.players;
   renderGameState(context.gameState);
 };
+
+export const updateDelta = () => {
+  const now = performance.now();
+  context.delta = (now - context.lastTime) / 1000;
+  context.lastTime = now;
+};

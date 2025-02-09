@@ -1,4 +1,6 @@
+import { Direction } from "../game/types";
 import { context } from "./context";
+import { movePlayer } from "../game/entities/player";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -40,4 +42,35 @@ export const setupInput = () => {
         break;
     }
   });
+};
+
+/**
+ * Perform client actions based on currently pressed keys.
+ */
+export const playerProcessInput = () => {
+  if (!context.id) {
+    return;
+  }
+
+  const { id, keys, gameState, delta } = context;
+
+  const player = gameState.players[id];
+  if (!player) {
+    // Player not initialized yet.
+    // console.error("Missing player entity.");
+    return;
+  }
+
+  if (keys.up) {
+    movePlayer(player, Direction.Up, delta);
+  }
+  if (keys.down) {
+    movePlayer(player, Direction.Down, delta);
+  }
+  if (keys.left) {
+    movePlayer(player, Direction.Left, delta);
+  }
+  if (keys.right) {
+    movePlayer(player, Direction.Right, delta);
+  }
 };

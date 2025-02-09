@@ -1,36 +1,43 @@
 import { io, Socket } from "socket.io-client";
 
-import type { GameState, SocketEventGameStateUpdate } from "../game/types";
+import type {
+  GameState,
+  IOMessageInput,
+  SocketEventGameStateUpdate,
+} from "../game/types";
 
 import { setupInput } from "./input";
-import { context, updateClientGameState } from "./context";
-import { initPlayer, playerProcessInput } from "./entities/player";
+import { context, updateClientGameState, updateDelta } from "./context";
+import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 
 const socket = io();
 
 let serverGameState: GameState | null = null;
-let serverTick = 0;
-let clientTick = 0;
 
 socket.on("connect", () => {
   if (socket.id) {
     context.id = socket.id;
-    initPlayer();
   }
 });
 
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
-  serverTick = data.tick;
-  clientTick = serverTick;
   serverGameState = data.gameState;
 
-  // TODO: interpolation for player movement
+  // TODO: interpolation for player movement?
 
   updateClientGameState(serverGameState);
 });
 
 setupInput();
+
+// TODO: This will be the actual game loop where we process
+// user input and add it to a inputMessage buffer in context,
+// but for now we're going to process the game loop at the same
+// interval that we send to the server.
+// setInterval(() => {
+
+// }, 10);
 
 // Send the current input state to the server every 50ms.
 setInterval(() => {
@@ -39,15 +46,16 @@ setInterval(() => {
     return;
   }
 
-  // Adjust delta.
-  const now = performance.now();
-  context.delta = (now - context.lastTime) / 1000;
-  context.lastTime = now;
-
-  clientTick++;
-
+  updateDelta();
   playerProcessInput();
   renderGameState(context.gameState);
 
-  socket.emit("input", { tick: clientTick, input: context.keys });
-}, 10);
+  socket.emit("input", {
+    inputs: [
+      {
+        delta: context.delta,
+        input: context.keys,
+      },
+    ],
+  } satisfies IOMessageInput);
+}, 50);

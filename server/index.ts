@@ -2,11 +2,19 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { Server as SocketIOServer, Socket } from "socket.io";
+import { uniqueNamesGenerator, Config, starWars } from "unique-names-generator";
+
+import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
+import { context } from "./context";
+import { actOnInput, movePlayer } from "../game/entities/player";
 
 const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer);
 const port = 3000;
+const config: Config = {
+  dictionaries: [starWars],
+};
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../../dist")));
@@ -23,17 +31,56 @@ app.get("/api/test", (req, res) => {
     );
 });
 
+const broadcastStateUpdate = () => {
+  io.emit("stateUpdate", {
+    gameState: context.gameState,
+  });
+};
+
 io.on("connection", (socket: Socket) => {
   console.log("User connected:", socket.id);
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
-    // delete gameState.players[socket.id];
-    // delete playerInputs[socket.id];
-    // io.emit("stateUpdate", { tick: currentTick, gameState });
+    delete context.gameState.players[socket.id];
+
+    broadcastStateUpdate();
+  });
+
+  // Init new player.
+  // TODO: This should happen later, once we allow the user to choose their own name.
+  context.gameState.players[socket.id] = {
+    id: socket.id,
+    name: uniqueNamesGenerator(config),
+    pos: {
+      x: Math.floor(Math.random() * (500 - 20)),
+      y: Math.floor(Math.random() * (500 - 20)),
+    },
+    health: 5,
+  };
+
+  broadcastStateUpdate();
+
+  // Note: socket.io guarantees message order, so we don't need to account for that ourselves
+  socket.on("input", (data: IOMessageInput) => {
+    const player = context.gameState.players[socket.id];
+    if (!player) {
+      console.error("Unexpected input event emitted by non-existent player");
+      return;
+    }
+
+    // Act on all the inputs in the buffer sent by the client.
+    data.inputs.forEach((input) => {
+      // TODO: Clamp delta to prevent cheating.
+      actOnInput(player, input.delta, input.input);
+    });
   });
 });
 
-httpServer.listen(port, () => {
+setInterval(() => {
+  broadcastStateUpdate();
+}, 30);
+
+io.httpServer.listen(port, () => {
   console.log(`Server listening on port ${port}`);
 });

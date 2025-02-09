@@ -17,6 +17,7 @@ export const renderGameState = (gameState: GameState) => {
     ctx.fillStyle = "black";
     ctx.font = "12px Arial";
 
-    ctx.fillText(player.health.toString(), player.pos.x, player.pos.y - 5);
+    ctx.fillText(player.health.toString(), player.pos.x + 5, player.pos.y + 15);
+    ctx.fillText(player.name, player.pos.x, player.pos.y - 5);
   }
 };

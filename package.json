@@ -7,7 +7,7 @@
     "test": "echo hello",
     "dev": "vite",
     "server": "tsx ./server/index.ts",
-    "server-dev": "nodemon --watch ./server/. --watch ./game/. --exec npm run server",
+    "server-dev": "nodemon --watch ./server/* --watch ./game/* --exec npm run server",
     "build": "vite build"
   },
   "author": "",
@@ -25,6 +25,7 @@
   "dependencies": {
     "express": "^4.21.2",
     "socket.io": "^4.8.1",
-    "socket.io-client": "^4.8.1"
+    "socket.io-client": "^4.8.1",
+    "unique-names-generator": "^4.7.1"
   }
 }

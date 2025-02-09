@@ -1,4 +1,4 @@
-import { Direction, PlayerEntity } from "../types";
+import { Direction, GameState, PlayerEntity, PlayerInput } from "../types";
 
 const PLAYER_SPEED = 200;
 
@@ -21,5 +21,24 @@ export const movePlayer = (
     case Direction.Right:
       player.pos.x += PLAYER_SPEED * delta;
       break;
+  }
+};
+
+export const actOnInput = (
+  player: PlayerEntity,
+  delta: number,
+  input: PlayerInput
+) => {
+  if (input.down) {
+    movePlayer(player, Direction.Down, delta);
+  }
+  if (input.up) {
+    movePlayer(player, Direction.Up, delta);
+  }
+  if (input.right) {
+    movePlayer(player, Direction.Right, delta);
+  }
+  if (input.left) {
+    movePlayer(player, Direction.Left, delta);
   }
 };
