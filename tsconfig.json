@@ -1,0 +1,14 @@
+{
+  // this will compile files that can be served to the browser :)
+  "compilerOptions": {
+    "target": "ES6",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "outDir": "./public/scripts/.",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": false,
+    "noImplicitAny": true
+  },
+  "include": ["./client/.", "client/index.ts"]
+}
