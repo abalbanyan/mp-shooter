@@ -7,15 +7,19 @@ export const setupInput = () => {
     e.preventDefault(); // no scrolling!!!
     switch (e.code) {
       case "ArrowUp":
+      case "KeyW":
         context.keys.up = true;
         break;
       case "ArrowDown":
+      case "KeyS":
         context.keys.down = true;
         break;
       case "ArrowLeft":
+      case "KeyA":
         context.keys.left = true;
         break;
       case "ArrowRight":
+      case "KeyD":
         context.keys.right = true;
         break;
       case "Space":
@@ -23,18 +27,23 @@ export const setupInput = () => {
         break;
     }
   });
+
   document.addEventListener("keyup", (e: KeyboardEvent) => {
     switch (e.code) {
       case "ArrowUp":
+      case "KeyW":
         context.keys.up = false;
         break;
       case "ArrowDown":
+      case "KeyS":
         context.keys.down = false;
         break;
       case "ArrowLeft":
+      case "KeyA":
         context.keys.left = false;
         break;
       case "ArrowRight":
+      case "KeyD":
         context.keys.right = false;
         break;
       case "Space":
@@ -42,6 +51,7 @@ export const setupInput = () => {
         break;
     }
   });
+
   context.canvas.addEventListener("mousemove", (event) => {
     const rect = context.canvas.getBoundingClientRect();
     context.mousePos.x = event.clientX - rect.left;
