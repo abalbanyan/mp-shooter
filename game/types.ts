@@ -6,6 +6,7 @@ export type PlayerEntity = {
     y: number;
   };
   health: number;
+  color: string;
 };
 
 export type GameState = {

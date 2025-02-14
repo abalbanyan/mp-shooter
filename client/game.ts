@@ -68,8 +68,6 @@ setInterval(() => {
     return;
   }
 
-  console.log(context.inputBuffer.length);
-
   // Send all buffered actions to the server.
   if (context.inputBuffer.length > 0) {
     socket.emit("input", {

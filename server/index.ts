@@ -2,19 +2,16 @@ import express from "express";
 import { createServer } from "http";
 import path from "path";
 import { Server as SocketIOServer, Socket } from "socket.io";
-import { uniqueNamesGenerator, Config, starWars } from "unique-names-generator";
 
 import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
 import { actOnInput, movePlayer } from "../game/entities/player";
+import { initNewPlayer } from "./init-player";
 
 const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer);
 const port = 3000;
-const config: Config = {
-  dictionaries: [starWars],
-};
 
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../../dist")));
@@ -49,15 +46,7 @@ io.on("connection", (socket: Socket) => {
 
   // Init new player.
   // TODO: This should happen later, once we allow the user to choose their own name.
-  context.gameState.players[socket.id] = {
-    id: socket.id,
-    name: uniqueNamesGenerator(config),
-    pos: {
-      x: Math.floor(Math.random() * (500 - 20)),
-      y: Math.floor(Math.random() * (500 - 20)),
-    },
-    health: 5,
-  };
+  initNewPlayer(socket.id);
 
   broadcastStateUpdate();
 

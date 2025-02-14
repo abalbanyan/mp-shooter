@@ -42,6 +42,12 @@ export const setupInput = () => {
         break;
     }
   });
+  context.canvas.addEventListener("mousemove", (event) => {
+    const rect = context.canvas.getBoundingClientRect();
+    context.mousePos.x = event.clientX - rect.left;
+    context.mousePos.y = event.clientY - rect.top;
+    console.log(context.mousePos);
+  });
 };
 
 /**

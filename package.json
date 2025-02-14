@@ -4,11 +4,10 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
-    "test": "echo hello",
-    "dev": "vite",
     "server": "tsx ./server/index.ts",
-    "server-dev": "nodemon --watch ./server/* --watch ./game/* --exec npm run server",
-    "build": "vite build"
+    "server-dev": "nodemon --watch ./server/*,./game/* --exec npm run server",
+    "client-dev": "vite",
+    "client-build": "vite build"
   },
   "author": "",
   "license": "ISC",

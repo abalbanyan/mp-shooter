@@ -1,7 +1,10 @@
 import { GameState, IOMessageInput, PlayerInput } from "../game/types";
-import { renderGameState } from "./render";
 
 type ClientContext = {
+  /**
+   * HTML canvas that we render the game to.
+   */
+  canvas: HTMLCanvasElement;
   lastTime: number;
   delta: number;
   id: null | string;
@@ -13,9 +16,16 @@ type ClientContext = {
     timestamp: number;
     gameState: GameState;
   }[];
+
+  mousePos: {
+    x: number;
+    y: number;
+  };
 };
 
 export const context: ClientContext = {
+  canvas: document.getElementById("gameCanvas") as HTMLCanvasElement,
+
   lastTime: performance.now(),
   delta: 0,
 
@@ -33,6 +43,11 @@ export const context: ClientContext = {
     left: false,
     right: false,
     attack: false,
+  },
+
+  mousePos: {
+    x: 0,
+    y: 0,
   },
 };
 

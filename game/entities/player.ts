@@ -1,11 +1,10 @@
-import { Direction, GameState, PlayerEntity, PlayerInput } from "../types";
+import { Direction, PlayerEntity, PlayerInput } from "../types";
 
 const PLAYER_SPEED = 200;
 
 export const movePlayer = (
   player: PlayerEntity,
   dir: Direction,
-  // server uses fixed delta
   delta: number
 ) => {
   switch (dir) {
