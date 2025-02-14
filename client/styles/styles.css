@@ -7,4 +7,5 @@
 
 canvas {
   background: var(--bg);
+  cursor: none;
 }
