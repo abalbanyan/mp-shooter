@@ -1,6 +1,7 @@
-import { Direction } from "../game/types";
+import { Direction, PlayerEntity } from "../game/types";
 import { context } from "./context";
-import { movePlayer } from "../game/entities/player";
+import { actOnInput, movePlayer } from "../game/entities/player";
+import { initBulletOnCooldown } from "../game/entities/bullet";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -56,8 +57,32 @@ export const setupInput = () => {
     const rect = context.canvas.getBoundingClientRect();
     context.mousePos.x = event.clientX - rect.left;
     context.mousePos.y = event.clientY - rect.top;
-    console.log(context.mousePos);
   });
+};
+
+/**
+ * Determine normalized bullet trajectory vector based on mousePos.
+ */
+const calculateBulletTrajectory = (
+  player: PlayerEntity,
+  mousePos: { x: number; y: number }
+) => {
+  if (!mousePos.x || !mousePos.y) {
+    return undefined;
+  }
+
+  const bulletTrajectory = {
+    x: mousePos.x - player.pos.x,
+    y: mousePos.y - player.pos.y,
+  };
+  const magnitude = Math.sqrt(
+    bulletTrajectory.x ** 2 + bulletTrajectory.y ** 2 // wow!
+  );
+  const normalizedBulletTrajectory = {
+    x: bulletTrajectory.x / magnitude,
+    y: bulletTrajectory.y / magnitude,
+  };
+  return normalizedBulletTrajectory;
 };
 
 /**
@@ -68,25 +93,14 @@ export const playerProcessInput = () => {
     return;
   }
 
-  const { id, keys, gameState, delta } = context;
+  const { id, keys, gameState, delta, mousePos } = context;
 
   const player = gameState.players[id];
   if (!player) {
-    // Player not initialized yet.
-    // console.error("Missing player entity.");
     return;
   }
 
-  if (keys.up) {
-    movePlayer(player, Direction.Up, delta);
-  }
-  if (keys.down) {
-    movePlayer(player, Direction.Down, delta);
-  }
-  if (keys.left) {
-    movePlayer(player, Direction.Left, delta);
-  }
-  if (keys.right) {
-    movePlayer(player, Direction.Right, delta);
-  }
+  player.bulletTrajectory = calculateBulletTrajectory(player, mousePos);
+
+  actOnInput(gameState, player, delta, keys);
 };

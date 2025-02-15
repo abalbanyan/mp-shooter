@@ -7,6 +7,7 @@ import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
 import { actOnInput, movePlayer } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
+import { bulletAct } from "../game/entities/bullet";
 
 const app = express();
 const httpServer = createServer(app);
@@ -58,15 +59,30 @@ io.on("connection", (socket: Socket) => {
       return;
     }
 
+    player.bulletTrajectory = data.bulletTrajectory;
+
     // Act on all the inputs in the buffer sent by the client.
     data.inputs.forEach((input) => {
       // TODO: Clamp delta to prevent cheating.
-      actOnInput(player, input.delta, input.input);
+      actOnInput(context.gameState, player, input.delta, input.input);
     });
   });
 });
 
+/**
+ * This is the game loop.
+ */
 setInterval(() => {
+  // delta might not always be 30 since the JS event loop doesn't guarantee the interval runs every 30ms.
+  const now = performance.now();
+  const delta = (now - context.lastTime) / 1000;
+  context.lastTime = now;
+
+  // Act on all entities.
+  context.gameState.bullets.forEach((bullet) => {
+    bulletAct(context.gameState, bullet, delta);
+  });
+
   broadcastStateUpdate();
 }, 30);
 

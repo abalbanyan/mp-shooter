@@ -29,7 +29,6 @@ const assignColor = (myColor = "") => {
 
 export const initNewPlayer = (id: string) => {
   console.log("Initializing new player!", id);
-  console.log(assignColor());
   context.gameState.players[id] = {
     color: assignColor(),
     id: id,

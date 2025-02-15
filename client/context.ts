@@ -33,6 +33,7 @@ export const context: ClientContext = {
   id: null,
   gameState: {
     players: {},
+    bullets: [],
   },
 
   gameStateBuffer: [],

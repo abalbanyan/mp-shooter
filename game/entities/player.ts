@@ -1,4 +1,5 @@
-import { Direction, PlayerEntity, PlayerInput } from "../types";
+import { Direction, GameState, PlayerEntity, PlayerInput } from "../types";
+import { initBulletOnCooldown } from "./bullet";
 
 const PLAYER_SPEED = 200;
 
@@ -24,6 +25,7 @@ export const movePlayer = (
 };
 
 export const actOnInput = (
+  gameState: GameState,
   player: PlayerEntity,
   delta: number,
   input: PlayerInput
@@ -39,5 +41,8 @@ export const actOnInput = (
   }
   if (input.left) {
     movePlayer(player, Direction.Left, delta);
+  }
+  if (input.attack) {
+    initBulletOnCooldown(gameState, player);
   }
 };

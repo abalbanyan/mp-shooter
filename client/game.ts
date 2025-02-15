@@ -10,6 +10,7 @@ import { setupInput } from "./input";
 import { context, updateDelta } from "./context";
 import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
+import { bulletAct } from "../game/entities/bullet";
 
 const socket = io();
 
@@ -21,11 +22,14 @@ socket.on("connect", () => {
 });
 
 /**
+ * Update client gameState based on values returned from the server stateUpdate.
  * TODO:
  *   - interpolating position
+ *   - don't overwrite player bulletTrajectory
  */
 const updateClientGameState = (newState: GameState) => {
   context.gameState.players = newState.players;
+  context.gameState.bullets = newState.bullets;
 };
 
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
@@ -52,6 +56,10 @@ const gameLoop = () => {
   updateDelta();
   playerProcessInput();
 
+  context.gameState.bullets.forEach((bullet) => {
+    bulletAct(context.gameState, bullet, context.delta);
+  });
+
   context.inputBuffer.push({
     delta: context.delta,
     input: context.keys,
@@ -68,10 +76,13 @@ setInterval(() => {
     return;
   }
 
+  const player = context.gameState.players[context.id];
+
   // Send all buffered actions to the server.
   if (context.inputBuffer.length > 0) {
     socket.emit("input", {
       inputs: context.inputBuffer,
+      bulletTrajectory: player.bulletTrajectory,
     } satisfies IOMessageInput);
 
     context.inputBuffer = [];

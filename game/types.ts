@@ -1,20 +1,39 @@
+export type Vector = {
+  x: number;
+  y: number;
+};
+
 export type PlayerEntity = {
   id: string;
   name: string;
-  pos: {
+  pos: Vector;
+  /** Normalized vector. */
+  bulletTrajectory?: {
     x: number;
     y: number;
   };
   health: number;
   color: string;
+  lastBulletFiredTimestamp?: number;
+  lastDamagedTimestamp?: number;
+};
+
+export type BulletEntity = {
+  pos: Vector;
+  /** player that emitted the bullet */
+  playerId: string;
+  color: string;
+  /** normalized vector, direction the bullet will travel */
+  direction: Vector;
 };
 
 export type GameState = {
   players: { [id: string]: PlayerEntity };
+  bullets: BulletEntity[];
 };
 
 export type SocketEventGameStateUpdate = {
-  tick: number;
+  timestamp: number;
   gameState: GameState;
 };
 
@@ -33,6 +52,9 @@ export type PlayerInput = {
   attack: boolean;
 };
 
+/**
+ * Message sent by server to clients to force a state update.
+ */
 export type IOMessageStateUpdate = {
   /**
    * For simplicity, we just send the entire game state.
@@ -40,6 +62,9 @@ export type IOMessageStateUpdate = {
   gameState: GameState;
 };
 
+/**
+ * Message sent by clients to server to notify of input.
+ */
 export type IOMessageInput = {
   inputs: {
     input: PlayerInput;
@@ -51,4 +76,5 @@ export type IOMessageInput = {
      */
     delta: number;
   }[];
+  bulletTrajectory: PlayerEntity["bulletTrajectory"];
 };

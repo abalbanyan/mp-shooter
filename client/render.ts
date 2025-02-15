@@ -1,6 +1,12 @@
-import type { GameState } from "../game/types";
+import type { GameState, PlayerEntity } from "../game/types";
+import { drawBullet } from "../game/entities/bullet";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
+
+/**
+ * TODO: split up the methods in this file, I think entities should be responsible for their rendering.
+ * This render function should loop through all entities and call some render() function.
+ */
 
 let animationTime: number = 0;
 
@@ -68,6 +74,29 @@ const drawTargetReticule = (
   ctx.stroke();
 };
 
+const drawPlayerBulletTrajectoryIndicator = (
+  ctx: CanvasRenderingContext2D,
+  player: PlayerEntity
+) => {
+  if (!player.bulletTrajectory) return;
+
+  ctx.fillStyle = player.color;
+  ctx.lineWidth = 3;
+
+  const bulletTrajectoryStart = 13;
+  const bulletTrajectoryEnd = 26;
+
+  ctx.beginPath();
+  ctx.moveTo(
+    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryStart,
+    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryStart
+  );
+  ctx.lineTo(
+    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryEnd,
+    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryEnd
+  );
+  ctx.stroke();
+};
 
 export const renderGameState = (gameState: GameState) => {
   const canvas = context.canvas;
@@ -77,10 +106,27 @@ export const renderGameState = (gameState: GameState) => {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  gameState.bullets.forEach((bullet) => {
+    const player = gameState.players[bullet.playerId];
+    if (!player) {
+      return;
+    }
+    drawBullet(ctx, bullet, player.color);
+  });
+
   for (const id in gameState.players) {
     const player = gameState.players[id];
 
-    ctx.fillStyle = player.color;
+    ctx.fillStyle = COLORS.text;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(player.health.toString(), player.pos.x, player.pos.y + 26);
+    ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
+
+    // Draw bullet trajectories for each player.
+    Object.values(gameState.players).forEach((player) => {
+      drawPlayerBulletTrajectoryIndicator(ctx, player);
+    });
 
     drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
 
@@ -95,10 +141,5 @@ export const renderGameState = (gameState: GameState) => {
     ctx.font = "12px Arial";
 
     drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
-
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
-    ctx.fillText(player.health.toString(), player.pos.x, player.pos.y + 26);
-    ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
   }
 };
