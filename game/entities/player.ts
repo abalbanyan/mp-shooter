@@ -1,7 +1,25 @@
 import { Direction, GameState, PlayerEntity, PlayerInput } from "../types";
 import { initBulletOnCooldown } from "./bullet";
 
+const PLAYER_IFRAME_DURATION_MS = 1000;
 const PLAYER_SPEED = 200;
+export const PLAYER_RADIUS = 10;
+
+// TODO
+export const renderPlayer = () => {};
+
+export const playerDamageOnCooldown = (player: PlayerEntity) => {
+  if (!player.lastDamagedTimestamp) {
+    return false;
+  }
+  const now = new Date().getTime();
+  return now < player.lastDamagedTimestamp + PLAYER_IFRAME_DURATION_MS;
+};
+
+export const damagePlayer = (player: PlayerEntity, damage: number) => {
+  player.health -= damage;
+  player.lastDamagedTimestamp = new Date().getTime();
+};
 
 export const movePlayer = (
   player: PlayerEntity,

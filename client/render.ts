@@ -2,6 +2,7 @@ import type { GameState, PlayerEntity } from "../game/types";
 import { drawBullet } from "../game/entities/bullet";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
+import { playerDamageOnCooldown } from "../game/entities/player";
 
 /**
  * TODO: split up the methods in this file, I think entities should be responsible for their rendering.
@@ -128,7 +129,11 @@ export const renderGameState = (gameState: GameState) => {
       drawPlayerBulletTrajectoryIndicator(ctx, player);
     });
 
-    drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
+    if (playerDamageOnCooldown(player)) {
+      drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
+    } else {
+      drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
+    }
 
     // Hitbox?
     ctx.beginPath();

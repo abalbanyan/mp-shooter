@@ -1,5 +1,8 @@
 import type { PlayerEntity, GameState, BulletEntity } from "../types";
+import { rayIntersectsCircle } from "../collision";
+import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
 
+const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 200;
 const BULLET_COOLDOWN_MS = 400;
 const BULLET_DISTANCE_SPAWN = 5;
@@ -45,7 +48,17 @@ export const initBulletOnCooldown = (
   });
 };
 
-export const cleanupBullets = (
+/**
+ * TODO: Maybe we should assign the bullets ids instead.
+ */
+const deleteBullet = (bullet: BulletEntity) => {
+  bullet.deleted = true;
+};
+const cleanupDeletedBullets = (gameState: GameState) => {
+  gameState.bullets = gameState.bullets.filter((bullet) => !bullet.deleted);
+};
+
+export const cleanupBulletsFromRemovedPlayer = (
   gameState: GameState,
   playerId: PlayerEntity["id"]
 ) => {
@@ -76,7 +89,21 @@ export const bulletAct = (
   // Collision detection.
   // TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players
   const players = Object.values(gameState.players);
-  players.forEach(() => {
-    //
+  players.forEach((player) => {
+    if (playerDamageOnCooldown(player)) {
+      return;
+    }
+    const intersect = rayIntersectsCircle(
+      bullet.pos,
+      bullet.direction,
+      20,
+      player.pos,
+      PLAYER_RADIUS
+    );
+    if (intersect) {
+      deleteBullet(bullet);
+      cleanupDeletedBullets(gameState);
+      damagePlayer(player, BULLET_DAMAGE);
+    }
   });
 };

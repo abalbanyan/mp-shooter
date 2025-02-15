@@ -3,6 +3,13 @@ export type Vector = {
   y: number;
 };
 
+// https://www.sciencedirect.com/topics/computer-science/aligned-bounding-box
+export type AABB = {
+  pos: Vector;
+  h: number;
+  w: number;
+};
+
 export type PlayerEntity = {
   id: string;
   name: string;
@@ -25,6 +32,7 @@ export type BulletEntity = {
   color: string;
   /** normalized vector, direction the bullet will travel */
   direction: Vector;
+  deleted?: boolean;
 };
 
 export type GameState = {
