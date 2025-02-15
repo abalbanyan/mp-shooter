@@ -1,0 +1,5 @@
+{
+  "watch": ["server", "game"],
+  "ext": "ts",
+  "exec": "npm run server"
+}
