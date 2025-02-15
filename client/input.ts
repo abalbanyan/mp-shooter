@@ -1,7 +1,6 @@
-import { Direction, PlayerEntity } from "../game/types";
+import { PlayerEntity } from "../game/types";
 import { context } from "./context";
-import { actOnInput, movePlayer } from "../game/entities/player";
-import { initBulletOnCooldown } from "../game/entities/bullet";
+import { actOnInput } from "../game/entities/player";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {

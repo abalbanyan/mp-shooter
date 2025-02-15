@@ -1,9 +1,10 @@
-import type { PlayerEntity, GameState, BulletEntity } from "../types";
-import { rayIntersectsCircle } from "../collision";
+import type { PlayerEntity, GameState, BulletEntity, Vector } from "../types";
+import { rayIntersectsAABB, rayIntersectsCircle } from "../collision";
 import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
+import { moveEntity } from "./util/move-entity";
 
 const BULLET_DAMAGE = 1;
-const BULLET_SPEED = 200;
+const BULLET_SPEED = 250;
 const BULLET_COOLDOWN_MS = 400;
 const BULLET_DISTANCE_SPAWN = 5;
 
@@ -78,18 +79,38 @@ export const drawBullet = (
   ctx.fill();
 };
 
-export const bulletAct = (
-  gameState: GameState,
-  bullet: BulletEntity,
-  delta: number
-) => {
-  bullet.pos.x += BULLET_SPEED * delta * bullet.direction.x;
-  bullet.pos.y += BULLET_SPEED * delta * bullet.direction.y;
+/**
+ * Detect if the bullet is colliding with another entity and take appropriate actions.
+ * TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players
+ */
+const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
+  gameState.walls.forEach((wall) => {
+    // We "pull" the bullet's raycast back to allow for increasing the length of the raycast.
+    // This helps avoid bullets tunneling through walls.
+    const extraLength = 10;
+    const behindBullet = {
+      x: bullet.pos.x - extraLength * bullet.direction.x,
+      y: bullet.pos.y - extraLength * bullet.direction.y,
+    };
 
-  // Collision detection.
-  // TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players
+    if (
+      rayIntersectsAABB(
+        behindBullet,
+        bullet.direction,
+        1 + extraLength,
+        wall.box
+      )
+    ) {
+      deleteBullet(bullet);
+      cleanupDeletedBullets(gameState);
+    }
+  });
+
   const players = Object.values(gameState.players);
   players.forEach((player) => {
+    if (player.id === bullet.playerId) {
+      return;
+    }
     if (playerDamageOnCooldown(player)) {
       return;
     }
@@ -106,4 +127,21 @@ export const bulletAct = (
       damagePlayer(player, BULLET_DAMAGE);
     }
   });
+};
+
+const moveBullet = (bullet: BulletEntity, delta: number) => {
+  const velocity: Vector = {
+    x: bullet.direction.x,
+    y: bullet.direction.y,
+  };
+  moveEntity(bullet.pos, velocity, BULLET_SPEED, delta);
+};
+
+export const bulletAct = (
+  gameState: GameState,
+  bullet: BulletEntity,
+  delta: number
+) => {
+  moveBullet(bullet, delta);
+  bulletCollision(gameState, bullet);
 };

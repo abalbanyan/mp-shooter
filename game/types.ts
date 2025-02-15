@@ -35,9 +35,14 @@ export type BulletEntity = {
   deleted?: boolean;
 };
 
+export type WallEntity = {
+  box: AABB;
+};
+
 export type GameState = {
   players: { [id: string]: PlayerEntity };
   bullets: BulletEntity[];
+  walls: WallEntity[];
 };
 
 export type SocketEventGameStateUpdate = {

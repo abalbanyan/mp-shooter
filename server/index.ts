@@ -5,7 +5,7 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 
 import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
-import { actOnInput, movePlayer } from "../game/entities/player";
+import { actOnInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
 import { bulletAct } from "../game/entities/bullet";
 
@@ -32,7 +32,7 @@ app.get("/api/test", (req, res) => {
 const broadcastStateUpdate = () => {
   io.emit("stateUpdate", {
     gameState: context.gameState,
-  });
+  } satisfies IOMessageStateUpdate);
 };
 
 io.on("connection", (socket: Socket) => {

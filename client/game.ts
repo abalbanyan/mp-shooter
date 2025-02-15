@@ -30,6 +30,7 @@ socket.on("connect", () => {
 const updateClientGameState = (newState: GameState) => {
   context.gameState.players = newState.players;
   context.gameState.bullets = newState.bullets;
+  context.gameState.walls = newState.walls;
 };
 
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {

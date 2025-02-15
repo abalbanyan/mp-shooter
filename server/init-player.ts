@@ -1,6 +1,11 @@
 import { uniqueNamesGenerator, Config, starWars } from "unique-names-generator";
 
-import { COLORS } from "../game/constants";
+import {
+  BOUNDING_WALL_SIZE,
+  COLORS,
+  MAP_HEIGHT,
+  MAP_WIDTH,
+} from "../game/constants";
 import { context } from "./context";
 
 const uniqueNamesConfig: Config = {
@@ -33,9 +38,22 @@ export const initNewPlayer = (id: string) => {
     color: assignColor(),
     id: id,
     name: uniqueNamesGenerator(uniqueNamesConfig),
+    lastDamagedTimestamp: new Date().getTime(),
     pos: {
-      x: Math.floor(Math.random() * (500 - 20)),
-      y: Math.floor(Math.random() * (500 - 20)),
+      x:
+        Math.floor(
+          Math.random() *
+            (MAP_WIDTH - BOUNDING_WALL_SIZE - 100 - BOUNDING_WALL_SIZE - 100)
+        ) +
+        BOUNDING_WALL_SIZE +
+        100,
+      y:
+        Math.floor(
+          Math.random() *
+            (MAP_HEIGHT - BOUNDING_WALL_SIZE - 100 - BOUNDING_WALL_SIZE - 100)
+        ) +
+        BOUNDING_WALL_SIZE +
+        100,
     },
     health: 5,
   };

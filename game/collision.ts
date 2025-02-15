@@ -71,13 +71,15 @@ export const rayIntersectsAABB = (
 };
 
 /**
+ * Returns false if no intersection.
+ * Returns clamping position if there is an intersection.
  * Additionally returns the clamping position of the circle (simple to calculate with an aabb).
  */
-export const circleIntersectsAAB = (
+export const circleIntersectsAABB = (
   circlePos: Vector,
   circleRadius: number,
   box: AABB
-) => {
+): { isIntersecting: false } | { isIntersecting: true; clampTo: Vector } => {
   const closestX = Math.max(
     box.pos.x,
     Math.min(circlePos.x, box.pos.x + box.w)
@@ -89,5 +91,29 @@ export const circleIntersectsAAB = (
   const dx = circlePos.x - closestX;
   const dy = circlePos.y - closestY;
   const distanceSquared = dx * dx + dy * dy;
-  return distanceSquared <= circleRadius ** 2;
+
+  const intersects = distanceSquared < circleRadius ** 2;
+
+  if (!intersects) {
+    return { isIntersecting: false };
+  }
+
+  // Intersecting with vertical section.
+  if (Math.abs(dx) > Math.abs(dy)) {
+    return {
+      isIntersecting: true,
+      clampTo: {
+        x: closestX + Math.sign(dx) * circleRadius,
+        y: circlePos.y,
+      },
+    };
+  }
+  // Intersecting with horizontal section.
+  return {
+    isIntersecting: true,
+    clampTo: {
+      x: circlePos.x,
+      y: closestY + Math.sign(dy) * circleRadius,
+    },
+  };
 };

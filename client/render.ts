@@ -1,5 +1,6 @@
 import type { GameState, PlayerEntity } from "../game/types";
 import { drawBullet } from "../game/entities/bullet";
+import { drawWall } from "../game/entities/wall";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
 import { playerDamageOnCooldown } from "../game/entities/player";
@@ -99,6 +100,28 @@ const drawPlayerBulletTrajectoryIndicator = (
   ctx.stroke();
 };
 
+const renderPlayer = (ctx: CanvasRenderingContext2D, player: PlayerEntity) => {
+  ctx.fillStyle = COLORS.text;
+  ctx.textAlign = "center";
+  ctx.textBaseline = "bottom";
+  ctx.fillText(player.health.toString(), player.pos.x, player.pos.y + 26);
+  ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
+
+  drawPlayerBulletTrajectoryIndicator(ctx, player);
+
+  if (playerDamageOnCooldown(player)) {
+    drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
+  } else {
+    drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
+  }
+
+  // center circle
+  ctx.beginPath();
+  ctx.arc(player.pos.x, player.pos.y, 3, 0, Math.PI * 2);
+  ctx.fillStyle = player.color;
+  ctx.fill();
+};
+
 export const renderGameState = (gameState: GameState) => {
   const canvas = context.canvas;
   const ctx = canvas.getContext("2d");
@@ -118,33 +141,32 @@ export const renderGameState = (gameState: GameState) => {
   for (const id in gameState.players) {
     const player = gameState.players[id];
 
-    ctx.fillStyle = COLORS.text;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "bottom";
-    ctx.fillText(player.health.toString(), player.pos.x, player.pos.y + 26);
-    ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
-
-    // Draw bullet trajectories for each player.
-    Object.values(gameState.players).forEach((player) => {
-      drawPlayerBulletTrajectoryIndicator(ctx, player);
-    });
-
-    if (playerDamageOnCooldown(player)) {
-      drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
-    } else {
-      drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
-    }
-
-    // Hitbox?
-    ctx.beginPath();
-    ctx.arc(player.pos.x, player.pos.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = player.color;
-    ctx.fill();
-
-    // background
-    ctx.fillStyle = COLORS.bg;
-    ctx.font = "12px Arial";
+    renderPlayer(ctx, player);
 
     drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
   }
+
+  gameState.walls.forEach((wall) => {
+    drawWall(ctx, wall);
+  });
+
+  // background
+  ctx.fillStyle = COLORS.bg;
+  ctx.font = "12px Arial";
 };
+
+function resizeCanvas() {
+  const canvas = context.canvas;
+  const dpr = window.devicePixelRatio || 1;
+
+  // Scaling using dpr makes the canvas much crisper, especially on high-resolution screens.
+  canvas.width = window.innerWidth * dpr;
+  canvas.height = window.innerHeight * dpr;
+
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.scale(dpr, dpr);
+  }
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
