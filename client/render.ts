@@ -1,6 +1,6 @@
 import type { GameState } from "../game/types";
 import { drawBullet } from "../game/entities/bullet";
-import { drawWall } from "../game/entities/wall";
+import { drawWall } from "./rendering/entities/wall";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
 import { drawPlayer, drawPlayerDashCooldownBar } from "../game/entities/player";

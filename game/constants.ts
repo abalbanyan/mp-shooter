@@ -18,4 +18,4 @@ export const COLORS = {
 
 export const MAP_HEIGHT = 800;
 export const MAP_WIDTH = 800;
-export const BOUNDING_WALL_SIZE = 20;
+export const BOUNDING_WALL_SIZE = 30;

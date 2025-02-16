@@ -1,11 +1,12 @@
 import { PowerupType } from "../../game/entities/powerup";
 
-export const loadImages = (paths: string[]) =>
-  paths.map((src) => {
-    const img = new Image();
-    img.src = src;
-    return img;
-  });
+export const loadImage = (path: string) => {
+  const img = new Image();
+  img.src = path;
+  return img;
+};
+
+export const loadImages = (paths: string[]) => paths.map(loadImage);
 
 export const POWERUP_IMAGES: Record<PowerupType, HTMLImageElement[]> = {
   Speed: loadImages([
@@ -18,4 +19,11 @@ export const POWERUP_IMAGES: Record<PowerupType, HTMLImageElement[]> = {
     "/powerup/bullet_speed/bullet_speed_2.png",
     "/powerup/bullet_speed/bullet_speed_3.png",
   ]),
+};
+
+export const TILES = {
+  walls: {
+    base: loadImage("/walls/base_wall_tile.png"),
+    busted: loadImage("/walls/busted_wall_tile.png"),
+  },
 };
