@@ -7,7 +7,7 @@ import { hasPowerup } from "./powerup";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 250;
-const BULLET_COOLDOWN_MS = 400;
+const BULLET_COOLDOWN_MS = 200;
 const BULLET_COOLDOWN_WITH_POWERUP_MS = 50;
 const BULLET_DISTANCE_SPAWN = 5;
 
