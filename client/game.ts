@@ -1,4 +1,4 @@
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
 import type {
   GameState,
@@ -10,7 +10,7 @@ import { setupInput } from "./input";
 import { context, updateDelta } from "./context";
 import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
-import { bulletAct } from "../game/entities/bullet";
+import { actOnEntities } from "../game/act-on-entities";
 
 const socket = io();
 
@@ -26,11 +26,13 @@ socket.on("connect", () => {
  * TODO:
  *   - interpolating position
  *   - don't overwrite player bulletTrajectory
+ *   - combine these entities into a single entities property for easier copying when we add new entity types
  */
 const updateClientGameState = (newState: GameState) => {
   context.gameState.players = newState.players;
   context.gameState.bullets = newState.bullets;
   context.gameState.walls = newState.walls;
+  context.gameState.powerups = newState.powerups;
 };
 
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
@@ -44,6 +46,7 @@ socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
 
   updateClientGameState(data.gameState);
   renderGameState(context.gameState);
+  context.debugInfo = context.gameState.players;
 });
 
 setupInput();
@@ -57,9 +60,8 @@ const gameLoop = () => {
   updateDelta();
   playerProcessInput();
 
-  context.gameState.bullets.forEach((bullet) => {
-    bulletAct(context.gameState, bullet, context.delta);
-  });
+  // Act on all entities.
+  actOnEntities(context.gameState, context.delta);
 
   context.inputBuffer.push({
     delta: context.delta,

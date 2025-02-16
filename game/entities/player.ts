@@ -1,13 +1,15 @@
-import { circleIntersectsAABB } from "../collision";
+import { circleIntersectsAABB } from "../util/collision";
 import { COLORS } from "../constants";
 import type { GameState, PlayerEntity, PlayerInput, Vector } from "../types";
 import { initBulletOnCooldown } from "./bullet";
 import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { magnitude } from "../util/vector";
+import { hasPowerup } from "./powerup";
 
 const PLAYER_IFRAME_DURATION_MS = 1000;
 const PLAYER_SPEED = 200;
+const PLAYER_SPEED_WITH_POWERUP = 350; // TODO: I feel like this is the wrong place for this
 const DASH_COOLDOWN_MS = 1000;
 const DASH_DISTANCE = 100;
 const DASH_SPEED = 600;
@@ -29,10 +31,6 @@ export const drawPlayerDashCooldownBar = (
   );
   const progressLeft = timeRemaining / DASH_COOLDOWN_MS;
 
-  const pos = {
-    x: player.pos.x - PLAYER_RADIUS - COOLDOWN_BAR_WIDTH,
-    y: player.pos.y - PLAYER_RADIUS,
-  };
   ctx.fillStyle = COLORS.cooldownBar;
   ctx.fillRect(
     player.pos.x - PLAYER_RADIUS - 5,
@@ -177,6 +175,10 @@ const beginDash = (player: PlayerEntity) => {
 };
 
 const progressDash = (player: PlayerEntity, delta: number) => {
+  if (player.dash.dashDistanceElapsed >= DASH_DISTANCE) {
+    player.dash.isDashing = false;
+    return;
+  }
   if (!player.dash.normalizedDashDirection) {
     return;
   }
@@ -190,9 +192,6 @@ const progressDash = (player: PlayerEntity, delta: number) => {
 
   // Need to decrement the dash distance.
   player.dash.dashDistanceElapsed += magnitude(movement);
-  if (player.dash.dashDistanceElapsed >= DASH_DISTANCE) {
-    player.dash.isDashing = false;
-  }
 };
 
 const movePlayer = (
@@ -218,7 +217,10 @@ const movePlayer = (
     velocity.x -= 1;
   }
 
-  moveEntity(player.pos, velocity, PLAYER_SPEED, delta);
+  const speed = hasPowerup(player, "Speed")
+    ? PLAYER_SPEED_WITH_POWERUP
+    : PLAYER_SPEED;
+  moveEntity(player.pos, velocity, speed, delta);
 };
 
 export const playerActOnInput = (

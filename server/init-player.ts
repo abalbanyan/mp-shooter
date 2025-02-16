@@ -61,5 +61,9 @@ export const initNewPlayer = (id: string) => {
         100,
     },
     health: 5,
+    powerups: {
+      Speed: { timestamp: undefined },
+      BulletSpeed: { timestamp: undefined },
+    },
   };
 };

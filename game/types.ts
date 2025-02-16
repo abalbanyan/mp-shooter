@@ -1,3 +1,5 @@
+import type { PowerupType } from "../game/entities/powerup";
+
 export type Vector = {
   x: number;
   y: number;
@@ -35,6 +37,7 @@ export type PlayerEntity = {
   };
   lastBulletFiredTimestamp?: number;
   lastDamagedTimestamp?: number;
+  powerups: Record<PowerupType, { timestamp?: number }>;
 };
 
 export type BulletEntity = {
@@ -51,10 +54,18 @@ export type WallEntity = {
   box: AABB;
 };
 
+export type PowerupEntity = {
+  pos: Vector;
+  type: PowerupType;
+  /** undefined means it's spawned */
+  collectedAtTimestamp?: number;
+};
+
 export type GameState = {
   players: { [id: string]: PlayerEntity };
   bullets: BulletEntity[];
   walls: WallEntity[];
+  powerups: PowerupEntity[];
 };
 
 export type SocketEventGameStateUpdate = {

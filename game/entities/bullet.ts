@@ -1,26 +1,15 @@
 import type { PlayerEntity, GameState, BulletEntity, Vector } from "../types";
-import { rayIntersectsAABB, rayIntersectsCircle } from "../collision";
+import { rayIntersectsAABB, rayIntersectsCircle } from "../util/collision";
 import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
 import { moveEntity } from "../util/move-entity";
+import { onCooldown } from "../util/cooldown";
+import { hasPowerup } from "./powerup";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 250;
 const BULLET_COOLDOWN_MS = 400;
+const BULLET_COOLDOWN_WITH_POWERUP_MS = 50;
 const BULLET_DISTANCE_SPAWN = 5;
-
-const isPlayerShootBulletOnCooldown = (player: PlayerEntity) => {
-  if (!player.lastBulletFiredTimestamp) {
-    console.log("masaka");
-    return false;
-  }
-
-  if (
-    player.lastBulletFiredTimestamp + BULLET_COOLDOWN_MS >
-    new Date().getTime()
-  ) {
-    return true;
-  }
-};
 
 /**
  * Initializes a bullet and adds it to the provided game state. provided the bullet is not off-cooldown.
@@ -29,7 +18,14 @@ export const initBulletOnCooldown = (
   gameState: GameState,
   player: PlayerEntity
 ) => {
-  if (!player.bulletTrajectory || isPlayerShootBulletOnCooldown(player)) {
+  const bulletCooldown = hasPowerup(player, "BulletSpeed")
+    ? BULLET_COOLDOWN_WITH_POWERUP_MS
+    : BULLET_COOLDOWN_MS;
+
+  if (
+    !player.bulletTrajectory ||
+    onCooldown(player.lastBulletFiredTimestamp, bulletCooldown)
+  ) {
     return;
   }
 
@@ -108,7 +104,7 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
 
   const players = Object.values(gameState.players);
   players.forEach((player) => {
-    if (player.id === bullet.playerId) {
+    if (player.id === bullet.playerId || bullet.deleted) {
       return;
     }
     if (playerDamageOnCooldown(player)) {

@@ -37,6 +37,7 @@ export const context: ClientContext = {
     players: {},
     bullets: [],
     walls: [],
+    powerups: [],
   },
 
   gameStateBuffer: [],

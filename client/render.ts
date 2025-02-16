@@ -4,6 +4,7 @@ import { drawWall } from "../game/entities/wall";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
 import { drawPlayer, drawPlayerDashCooldownBar } from "../game/entities/player";
+import { drawPowerup } from "./rendering/entities/powerup";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -53,13 +54,17 @@ export const renderGameState = (gameState: GameState) => {
     drawPlayerDashCooldownBar(ctx, myPlayer);
   }
 
+  gameState.powerups.forEach((powerup) => {
+    drawPowerup(ctx, powerup);
+  });
+
   // background
   ctx.fillStyle = COLORS.bg;
   ctx.font = "12px Arial";
 
   // debug
   ctx.fillStyle = "red";
-  ctx.fillText(JSON.stringify(context.debugInfo), 0, 0);
+  ctx.fillText(JSON.stringify(context.debugInfo), 60, 50);
 };
 
 function resizeCanvas() {

@@ -2,9 +2,9 @@
  * Various utilities related to collision detection.
  */
 
-import type { AABB, Vector } from "./types";
+import type { AABB, Vector } from "../types";
 
-import { dotProduct } from "./util/vector";
+import { dotProduct, magnitude, subVector } from "./vector";
 
 export const rayIntersectsCircle = (
   rayOrigin: Vector,
@@ -116,4 +116,14 @@ export const circleIntersectsAABB = (
       y: closestY + Math.sign(dy) * circleRadius,
     },
   };
+};
+
+export const circleIntersectsCircle = (
+  ca: Vector,
+  ra: number,
+  cb: Vector,
+  rb: number
+) => {
+  const distanceBetweenCircles = magnitude(subVector(cb, ca));
+  return distanceBetweenCircles < ra + rb;
 };

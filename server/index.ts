@@ -8,6 +8,7 @@ import { context } from "./context";
 import { playerActOnInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
 import { bulletAct } from "../game/entities/bullet";
+import { actOnEntities } from "../game/act-on-entities";
 
 const app = express();
 const httpServer = createServer(app);
@@ -79,8 +80,14 @@ setInterval(() => {
   context.lastTime = now;
 
   // Act on all entities.
-  context.gameState.bullets.forEach((bullet) => {
-    bulletAct(context.gameState, bullet, delta);
+  actOnEntities(context.gameState, delta);
+
+  // cleanup dead players
+  const deadPlayers = Object.values(context.gameState.players).filter(
+    (player) => player.dead
+  );
+  deadPlayers.forEach((deadPlayer) => {
+    delete context.gameState.players[deadPlayer.id];
   });
 
   broadcastStateUpdate();
