@@ -1,7 +1,7 @@
 import type { PlayerEntity, GameState, BulletEntity, Vector } from "../types";
 import { rayIntersectsAABB, rayIntersectsCircle } from "../collision";
 import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
-import { moveEntity } from "./util/move-entity";
+import { moveEntity } from "../util/move-entity";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 250;

@@ -21,6 +21,8 @@ type ClientContext = {
     x: number;
     y: number;
   };
+
+  debugInfo?: any;
 };
 
 export const context: ClientContext = {
@@ -45,6 +47,7 @@ export const context: ClientContext = {
     left: false,
     right: false,
     attack: false,
+    dash: false,
   },
 
   mousePos: {

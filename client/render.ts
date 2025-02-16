@@ -1,125 +1,24 @@
-import type { GameState, PlayerEntity } from "../game/types";
+import type { GameState } from "../game/types";
 import { drawBullet } from "../game/entities/bullet";
 import { drawWall } from "../game/entities/wall";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
-import { playerDamageOnCooldown } from "../game/entities/player";
-
-/**
- * TODO: split up the methods in this file, I think entities should be responsible for their rendering.
- * This render function should loop through all entities and call some render() function.
- */
-
-let animationTime: number = 0;
-
-function drawBumpyCircle(
-  ctx: CanvasRenderingContext2D,
-  baseRadius: number,
-  bumpAmplitude: number,
-  numBumps: number,
-  speed: number,
-  pos: {
-    x: number;
-    y: number;
-  },
-  color: string,
-  thickness: number,
-  /** number of steps to points to draw the circle, higher values means more smooth */
-  steps: number
-): void {
-  ctx.beginPath();
-
-  for (let i = 0; i <= steps; i++) {
-    const angle: number = (i / steps) * Math.PI * 2;
-
-    // combine multiple sine waves to create a more organic, bumpy look
-    const primary = Math.sin(numBumps * angle + animationTime);
-    const secondary = Math.sin(numBumps * 1.5 * angle - animationTime * 1.3);
-    const tertiary = Math.sin(numBumps * 0.7 * angle + animationTime * 0.7);
-
-    const offset: number =
-      primary * bumpAmplitude +
-      secondary * (bumpAmplitude * 0.5) +
-      tertiary * (bumpAmplitude * 0.3);
-
-    const r: number = baseRadius + offset;
-    const x: number = pos.x + r * Math.cos(angle);
-    const y: number = pos.y + r * Math.sin(angle);
-
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
-    }
-  }
-  ctx.closePath();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = thickness;
-  ctx.stroke();
-
-  animationTime = (animationTime + speed) % (Math.PI * 2);
-}
+import { drawPlayer, drawPlayerDashCooldownBar } from "../game/entities/player";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
   x: number,
   y: number
 ) => {
-  const length = 10;
+  const length = 8;
   ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = COLORS.target;
   ctx.moveTo(x - length, y);
   ctx.lineTo(x + length, y);
   ctx.moveTo(x, y - length);
   ctx.lineTo(x, y + length);
-  ctx.strokeStyle = COLORS.target;
-  ctx.lineWidth = 2;
   ctx.stroke();
-};
-
-const drawPlayerBulletTrajectoryIndicator = (
-  ctx: CanvasRenderingContext2D,
-  player: PlayerEntity
-) => {
-  if (!player.bulletTrajectory) return;
-
-  ctx.fillStyle = player.color;
-  ctx.lineWidth = 3;
-
-  const bulletTrajectoryStart = 13;
-  const bulletTrajectoryEnd = 26;
-
-  ctx.beginPath();
-  ctx.moveTo(
-    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryStart,
-    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryStart
-  );
-  ctx.lineTo(
-    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryEnd,
-    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryEnd
-  );
-  ctx.stroke();
-};
-
-const renderPlayer = (ctx: CanvasRenderingContext2D, player: PlayerEntity) => {
-  ctx.fillStyle = COLORS.text;
-  ctx.textAlign = "center";
-  ctx.textBaseline = "bottom";
-  ctx.fillText(player.health.toString(), player.pos.x, player.pos.y + 26);
-  ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
-
-  drawPlayerBulletTrajectoryIndicator(ctx, player);
-
-  if (playerDamageOnCooldown(player)) {
-    drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
-  } else {
-    drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
-  }
-
-  // center circle
-  ctx.beginPath();
-  ctx.arc(player.pos.x, player.pos.y, 3, 0, Math.PI * 2);
-  ctx.fillStyle = player.color;
-  ctx.fill();
 };
 
 export const renderGameState = (gameState: GameState) => {
@@ -141,18 +40,26 @@ export const renderGameState = (gameState: GameState) => {
   for (const id in gameState.players) {
     const player = gameState.players[id];
 
-    renderPlayer(ctx, player);
-
-    drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
+    drawPlayer(ctx, player);
   }
 
   gameState.walls.forEach((wall) => {
     drawWall(ctx, wall);
   });
 
+  drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
+  if (context.id) {
+    const myPlayer = gameState.players[context.id];
+    drawPlayerDashCooldownBar(ctx, myPlayer);
+  }
+
   // background
   ctx.fillStyle = COLORS.bg;
   ctx.font = "12px Arial";
+
+  // debug
+  ctx.fillStyle = "red";
+  ctx.fillText(JSON.stringify(context.debugInfo), 0, 0);
 };
 
 function resizeCanvas() {

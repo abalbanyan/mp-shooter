@@ -5,7 +5,7 @@ import { Server as SocketIOServer, Socket } from "socket.io";
 
 import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
-import { actOnInput } from "../game/entities/player";
+import { playerActOnInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
 import { bulletAct } from "../game/entities/bullet";
 
@@ -64,7 +64,7 @@ io.on("connection", (socket: Socket) => {
     // Act on all the inputs in the buffer sent by the client.
     data.inputs.forEach((input) => {
       // TODO: Clamp delta to prevent cheating.
-      actOnInput(context.gameState, player, input.delta, input.input);
+      playerActOnInput(context.gameState, player, input.delta, input.input);
     });
   });
 });

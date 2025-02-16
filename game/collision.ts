@@ -4,7 +4,7 @@
 
 import type { AABB, Vector } from "./types";
 
-const dotProduct = (a: Vector, b: Vector): number => a.x * b.x + a.y * b.y;
+import { dotProduct } from "./util/vector";
 
 export const rayIntersectsCircle = (
   rayOrigin: Vector,

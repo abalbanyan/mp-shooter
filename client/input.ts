@@ -1,6 +1,6 @@
 import { PlayerEntity } from "../game/types";
 import { context } from "./context";
-import { actOnInput } from "../game/entities/player";
+import { playerActOnInput } from "../game/entities/player";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -24,6 +24,9 @@ export const setupInput = () => {
         break;
       case "Space":
         context.keys.attack = true;
+        break;
+      case "ShiftLeft":
+        context.keys.dash = true;
         break;
     }
   });
@@ -49,6 +52,31 @@ export const setupInput = () => {
       case "Space":
         context.keys.attack = false;
         break;
+      case "ShiftLeft":
+        context.keys.dash = false;
+        break;
+    }
+  });
+
+  document.addEventListener("mousedown", (event) => {
+    switch (event.button) {
+      case 0:
+        context.keys.attack = true;
+        break;
+      case 2:
+        context.keys.dash = true;
+        break;
+    }
+  });
+
+  document.addEventListener("mouseup", (event) => {
+    switch (event.button) {
+      case 0:
+        context.keys.attack = false;
+        break;
+      case 2:
+        context.keys.dash = false;
+        break;
     }
   });
 
@@ -57,6 +85,11 @@ export const setupInput = () => {
     context.mousePos.x = event.clientX - rect.left;
     context.mousePos.y = event.clientY - rect.top;
   });
+
+  // Disable right click menu
+  context.canvas.addEventListener("contextmenu", (event) =>
+    event.preventDefault()
+  );
 };
 
 /**
@@ -101,5 +134,5 @@ export const playerProcessInput = () => {
 
   player.bulletTrajectory = calculateBulletTrajectory(player, mousePos);
 
-  actOnInput(gameState, player, delta, keys);
+  playerActOnInput(gameState, player, delta, keys);
 };

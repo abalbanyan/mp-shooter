@@ -10,6 +10,11 @@ export type AABB = {
   w: number;
 };
 
+export type Animation = {
+  tick: number;
+  id: string;
+};
+
 export type PlayerEntity = {
   id: string;
   name: string;
@@ -21,6 +26,13 @@ export type PlayerEntity = {
   };
   health: number;
   color: string;
+  dead: boolean;
+  dash: {
+    isDashing: boolean;
+    dashDistanceElapsed: number;
+    normalizedDashDirection?: Vector;
+    lastDashTimestamp?: number;
+  };
   lastBulletFiredTimestamp?: number;
   lastDamagedTimestamp?: number;
 };
@@ -63,6 +75,7 @@ export type PlayerInput = {
   left: boolean;
   right: boolean;
   attack: boolean;
+  dash: boolean;
 };
 
 /**

@@ -2,6 +2,7 @@ export const COLORS = {
   text: "#ffffff",
   bg: "#080808",
   walls: "#c3c3c3",
+  cooldownBar: "c3c3c3",
   target: "#d9386a",
   playerColors: [
     "#3e7687", // green

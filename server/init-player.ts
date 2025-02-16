@@ -39,6 +39,11 @@ export const initNewPlayer = (id: string) => {
     id: id,
     name: uniqueNamesGenerator(uniqueNamesConfig),
     lastDamagedTimestamp: new Date().getTime(),
+    dead: false,
+    dash: {
+      isDashing: false,
+      dashDistanceElapsed: 0,
+    },
     pos: {
       x:
         Math.floor(
