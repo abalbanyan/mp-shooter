@@ -5,6 +5,7 @@ import { context } from "./context";
 import { COLORS } from "../game/constants";
 import { drawPlayer, drawPlayerDashCooldownBar } from "../game/entities/player";
 import { drawPowerup } from "./rendering/entities/powerup";
+import { drawPlayerTrail } from "./rendering/entities/player-trails";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -57,6 +58,8 @@ export const renderGameState = (gameState: GameState) => {
   gameState.powerups.forEach((powerup) => {
     drawPowerup(ctx, powerup);
   });
+
+  context.playerTrails.forEach((trail) => drawPlayerTrail(ctx, trail));
 
   // background
   ctx.fillStyle = COLORS.bg;

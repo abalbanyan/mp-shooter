@@ -1,4 +1,5 @@
 import { GameState, IOMessageInput, PlayerInput } from "../game/types";
+import type { PlayerTrailEntity } from "./rendering/entities/player-trails";
 
 type ClientContext = {
   /**
@@ -21,6 +22,8 @@ type ClientContext = {
     x: number;
     y: number;
   };
+
+  playerTrails: PlayerTrailEntity[];
 
   debugInfo?: any;
 };
@@ -55,6 +58,8 @@ export const context: ClientContext = {
     x: 0,
     y: 0,
   },
+
+  playerTrails: [],
 };
 
 export const updateDelta = () => {

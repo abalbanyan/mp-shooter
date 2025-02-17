@@ -13,3 +13,8 @@ export const subVector = (a: Vector, d: Vector): Vector => ({
   x: a.x - d.x,
   y: a.y - d.y,
 });
+
+export const scale = (v: Vector, s: number) => ({
+  x: v.x * s,
+  y: v.y * s,
+});

@@ -11,6 +11,7 @@ import { context, updateDelta } from "./context";
 import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 import { actOnEntities } from "../game/act-on-entities";
+import { createPlayerTrailsForPlayers } from "./rendering/entities/player-trails";
 
 const socket = io();
 
@@ -46,7 +47,7 @@ socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
 
   updateClientGameState(data.gameState);
   renderGameState(context.gameState);
-  context.debugInfo = context.gameState.players;
+  context.debugInfo = context.playerTrails;
 });
 
 setupInput();
@@ -59,9 +60,13 @@ const gameLoop = () => {
 
   updateDelta();
   playerProcessInput();
+  context.debugInfo = Math.round(1 / context.delta);
 
   // Act on all entities.
   actOnEntities(context.gameState, context.delta);
+
+  // Spawn trails on all players.
+  createPlayerTrailsForPlayers(Object.values(context.gameState.players));
 
   context.inputBuffer.push({
     delta: context.delta,
