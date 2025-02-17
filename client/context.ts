@@ -1,4 +1,5 @@
 import { GameState, IOMessageInput, PlayerInput } from "../game/types";
+import type { PlayerGhostEntity } from "./rendering/entities/player-ghost";
 import type { PlayerTrailEntity } from "./rendering/entities/player-trails";
 
 type ClientContext = {
@@ -23,7 +24,9 @@ type ClientContext = {
     y: number;
   };
 
+  // Client-only entities for visual effect.
   playerTrails: PlayerTrailEntity[];
+  playerGhosts: PlayerGhostEntity[];
 
   debugInfo?: any;
 };
@@ -60,6 +63,7 @@ export const context: ClientContext = {
   },
 
   playerTrails: [],
+  playerGhosts: [],
 };
 
 context.debugInfo = context.mousePos;

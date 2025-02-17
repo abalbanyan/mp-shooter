@@ -9,6 +9,7 @@ import {
 } from "./rendering/entities/player";
 import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
+import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -57,6 +58,7 @@ export const renderGameState = (gameState: GameState) => {
   });
 
   context.playerTrails.forEach((trail) => drawPlayerTrail(ctx, trail));
+  context.playerGhosts.forEach((ghost) => drawPlayerGhostEntity(ctx, ghost));
 
   Object.values(gameState.players).forEach((player) => {
     drawPlayer(ctx, player);

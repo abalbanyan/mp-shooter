@@ -12,6 +12,10 @@ import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 import { actOnEntities } from "../game/act-on-entities";
 import { createPlayerTrailsForPlayers } from "./rendering/entities/player-trails";
+import {
+  cleanupPlayerGhosts,
+  createPlayerGhostsForPlayers,
+} from "./rendering/entities/player-ghost";
 
 const socket = io();
 
@@ -64,8 +68,11 @@ const gameLoop = () => {
   // Act on all entities.
   actOnEntities(context.gameState, context.delta);
 
-  // Spawn trails on all players.
-  createPlayerTrailsForPlayers(Object.values(context.gameState.players));
+  const players = Object.values(context.gameState.players);
+
+  createPlayerTrailsForPlayers(players);
+  createPlayerGhostsForPlayers(players);
+  cleanupPlayerGhosts();
 
   context.inputBuffer.push({
     delta: context.delta,
