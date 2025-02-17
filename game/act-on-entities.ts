@@ -1,5 +1,5 @@
 import { bulletAct } from "./entities/bullet";
-import { powerupAct } from "./entities/powerup";
+import { pickupAct } from "./entities/pickup";
 import { GameState } from "./types";
 
 /**
@@ -10,7 +10,7 @@ export const actOnEntities = (gameState: GameState, delta: number) => {
   gameState.bullets.forEach((bullet) => {
     bulletAct(gameState, bullet, delta);
   });
-  gameState.powerups.forEach((powerup) => {
-    powerupAct(gameState, powerup);
+  gameState.pickups.forEach((pickup) => {
+    pickupAct(gameState, pickup);
   });
 };

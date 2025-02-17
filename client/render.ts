@@ -7,7 +7,7 @@ import {
   drawPlayer,
   drawPlayerDashCooldownBar,
 } from "./rendering/entities/player";
-import { drawPowerup } from "./rendering/entities/powerup";
+import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
 
 const drawTargetReticule = (
@@ -42,12 +42,6 @@ export const renderGameState = (gameState: GameState) => {
     drawBullet(ctx, bullet, player.color);
   });
 
-  for (const id in gameState.players) {
-    const player = gameState.players[id];
-
-    drawPlayer(ctx, player);
-  }
-
   gameState.walls.forEach((wall) => {
     drawWall(ctx, wall);
   });
@@ -58,11 +52,15 @@ export const renderGameState = (gameState: GameState) => {
     drawPlayerDashCooldownBar(ctx, myPlayer);
   }
 
-  gameState.powerups.forEach((powerup) => {
-    drawPowerup(ctx, powerup);
+  gameState.pickups.forEach((pickup) => {
+    drawPickup(ctx, pickup);
   });
 
   context.playerTrails.forEach((trail) => drawPlayerTrail(ctx, trail));
+
+  Object.values(gameState.players).forEach((player) => {
+    drawPlayer(ctx, player);
+  });
 
   // background
   ctx.fillStyle = COLORS.bg;

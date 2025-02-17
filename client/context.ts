@@ -40,7 +40,7 @@ export const context: ClientContext = {
     players: {},
     bullets: [],
     walls: [],
-    powerups: [],
+    pickups: [],
   },
 
   gameStateBuffer: [],
@@ -61,6 +61,8 @@ export const context: ClientContext = {
 
   playerTrails: [],
 };
+
+context.debugInfo = context.mousePos;
 
 export const updateDelta = () => {
   const now = performance.now();

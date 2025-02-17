@@ -1,4 +1,5 @@
 import type { PowerupType } from "../game/entities/powerup";
+import type { PickupType } from "./entities/pickup";
 
 export type Vector = {
   x: number;
@@ -54,9 +55,9 @@ export type WallEntity = {
   box: AABB;
 };
 
-export type PowerupEntity = {
+export type PickupEntity = {
   pos: Vector;
-  type: PowerupType;
+  type: PickupType;
   /** undefined means it's spawned */
   collectedAtTimestamp?: number;
 };
@@ -65,7 +66,7 @@ export type GameState = {
   players: { [id: string]: PlayerEntity };
   bullets: BulletEntity[];
   walls: WallEntity[];
-  powerups: PowerupEntity[];
+  pickups: PickupEntity[];
 };
 
 export type SocketEventGameStateUpdate = {

@@ -46,6 +46,7 @@ export const initNewPlayer = (id: string) => {
       dashDistanceElapsed: 0,
     },
     pos: {
+      // TODO: Don't spawn on walls, bullets, or pickups
       x:
         Math.floor(
           Math.random() *

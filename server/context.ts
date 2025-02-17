@@ -1,7 +1,7 @@
 import { GameState } from "../game/types";
 import { initBoundingWalls } from "../game/entities/wall";
 import { MAP_HEIGHT, MAP_WIDTH, BOUNDING_WALL_SIZE } from "../game/constants";
-import { PowerupType, initPowerup } from "../game/entities/powerup";
+import { initPickup } from "../game/entities/pickup";
 
 type ServerContext = {
   lastTime: number;
@@ -15,11 +15,13 @@ export const context: ServerContext = {
   gameState: {
     players: {},
     bullets: [],
-    powerups: [
-      initPowerup({ x: 535, y: 250 }, "Speed"),
-      initPowerup({ x: 250, y: 515 }, "Speed"),
-      initPowerup({ x: 250, y: 250 }, "BulletSpeed"),
-      initPowerup({ x: 535, y: 515 }, "BulletSpeed"),
+    pickups: [
+      initPickup({ x: 580, y: 250 }, "Speed"),
+      initPickup({ x: 250, y: 550 }, "Speed"),
+      initPickup({ x: 250, y: 250 }, "BulletSpeed"),
+      initPickup({ x: 580, y: 550 }, "BulletSpeed"),
+      initPickup({ x: 710, y: 85 }, "Health"),
+      initPickup({ x: 110, y: 700 }, "Health"),
     ],
     walls: initBoundingWalls(MAP_HEIGHT, MAP_WIDTH, BOUNDING_WALL_SIZE),
   },

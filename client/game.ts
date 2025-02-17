@@ -33,7 +33,7 @@ const updateClientGameState = (newState: GameState) => {
   context.gameState.players = newState.players;
   context.gameState.bullets = newState.bullets;
   context.gameState.walls = newState.walls;
-  context.gameState.powerups = newState.powerups;
+  context.gameState.pickups = newState.pickups;
 };
 
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
@@ -47,7 +47,6 @@ socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
 
   updateClientGameState(data.gameState);
   renderGameState(context.gameState);
-  context.debugInfo = context.playerTrails;
 });
 
 setupInput();
@@ -60,7 +59,7 @@ const gameLoop = () => {
 
   updateDelta();
   playerProcessInput();
-  context.debugInfo = Math.round(1 / context.delta);
+  // context.debugInfo = Math.round(1 / context.delta);
 
   // Act on all entities.
   actOnEntities(context.gameState, context.delta);

@@ -1,4 +1,4 @@
-import { PowerupType } from "../../game/entities/powerup";
+import type { PickupType } from "../../game/entities/pickup";
 
 export const loadImage = (path: string) => {
   const img = new Image();
@@ -8,7 +8,7 @@ export const loadImage = (path: string) => {
 
 export const loadImages = (paths: string[]) => paths.map(loadImage);
 
-export const POWERUP_IMAGES: Record<PowerupType, HTMLImageElement[]> = {
+export const PICKUPS: Record<PickupType, HTMLImageElement[]> = {
   Speed: loadImages([
     "/powerup/speed/speedup_1.png",
     "/powerup/speed/speedup_2.png",
@@ -18,6 +18,11 @@ export const POWERUP_IMAGES: Record<PowerupType, HTMLImageElement[]> = {
     "/powerup/bullet_speed/bullet_speed_1.png",
     "/powerup/bullet_speed/bullet_speed_2.png",
     "/powerup/bullet_speed/bullet_speed_3.png",
+  ]),
+  Health: loadImages([
+    "/health/health_1.png",
+    "/health/health_2.png",
+    "/health/health_3.png",
   ]),
 };
 
