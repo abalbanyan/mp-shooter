@@ -12,6 +12,12 @@ const PICKUP_PROPERTY_MAP: Record<
   PickupType,
   { respawn: number; onPickup: (player: PlayerEntity) => void }
 > = {
+  BulletSize: {
+    respawn: 10_000,
+    onPickup: (player: PlayerEntity) => {
+      player.powerups["BulletSize"] = { timestamp: new Date().getTime() };
+    },
+  },
   Speed: {
     respawn: 10_000,
     onPickup: (player: PlayerEntity) => {

@@ -4,12 +4,16 @@ import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
 import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { hasPowerup } from "./powerup";
+import { perpendiculars } from "../util/vector";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 250;
 const BULLET_COOLDOWN_MS = 200;
 const BULLET_COOLDOWN_WITH_POWERUP_MS = 50;
 const BULLET_DISTANCE_SPAWN = 5;
+
+const BULLET_RADIUS = 4;
+const BIG_BULLET_RADIUS = 12;
 
 /**
  * Initializes a bullet and adds it to the provided game state. provided the bullet is not off-cooldown.
@@ -42,6 +46,7 @@ export const initBulletOnCooldown = (
       x: player.bulletTrajectory.x,
       y: player.bulletTrajectory.y,
     },
+    big: hasPowerup(player, "BulletSize"),
   });
 };
 
@@ -67,20 +72,69 @@ export const cleanupBulletsFromRemovedPlayer = (
 export const isBulletIntersectingPlayerPos = (
   playerPos: Vector,
   bullet: BulletEntity
-) =>
-  rayIntersectsCircle(
-    bullet.pos,
-    bullet.direction,
-    20,
-    playerPos,
-    PLAYER_RADIUS
-  );
+) => {
+  // We want to raycast two additional casts, shifted left and right of the bullet.
+  if (bullet.big) {
+    const [left, right] = perpendiculars(bullet.direction);
+    const leftRayPos = {
+      x: bullet.pos.x + left.x * 10,
+      y: bullet.pos.y + left.y * 10,
+    };
+    const rightRayPos = {
+      x: bullet.pos.x + right.x * 10,
+      y: bullet.pos.y + right.y * 10,
+    };
+    if (
+      rayIntersectsCircle(
+        leftRayPos,
+        bullet.direction,
+        30,
+        playerPos,
+        PLAYER_RADIUS
+      )
+    ) {
+      return true;
+    }
+    if (
+      rayIntersectsCircle(
+        rightRayPos,
+        bullet.direction,
+        30,
+        playerPos,
+        PLAYER_RADIUS
+      )
+    ) {
+      return true;
+    }
+    if (
+      rayIntersectsCircle(
+        bullet.pos,
+        bullet.direction,
+        30,
+        playerPos,
+        PLAYER_RADIUS
+      )
+    ) {
+      return true;
+    }
+  } else {
+    return rayIntersectsCircle(
+      bullet.pos,
+      bullet.direction,
+      20,
+      playerPos,
+      PLAYER_RADIUS
+    );
+  }
+  return false;
+};
 
 /**
  * Detect if the bullet is colliding with another entity and take appropriate actions.
  * TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players
  */
 const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
+  // Check if the bullet is colliding with any walls.
   gameState.walls.forEach((wall) => {
     // We "pull" the bullet's raycast back to allow for increasing the length of the raycast.
     // This helps avoid bullets tunneling through walls.
@@ -103,6 +157,7 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
     }
   });
 
+  // Check if bullet is colliding with any players.
   const players = Object.values(gameState.players);
   players.forEach((player) => {
     if (player.id === bullet.playerId || bullet.deleted) {
@@ -110,6 +165,13 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
     }
     if (playerDamageOnCooldown(player)) {
       return;
+    }
+
+    if (hasPowerup(player, "BulletSize")) {
+      console.log("bla");
+    }
+    if (hasPowerup(player, "BulletSpeed")) {
+      console.log("blahaj");
     }
 
     if (isBulletIntersectingPlayerPos(player.pos, bullet)) {

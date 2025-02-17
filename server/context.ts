@@ -17,7 +17,7 @@ export const context: ServerContext = {
     bullets: [],
     pickups: [
       initPickup({ x: 580, y: 250 }, "Speed"),
-      initPickup({ x: 250, y: 550 }, "Speed"),
+      initPickup({ x: 250, y: 550 }, "BulletSize"),
       initPickup({ x: 250, y: 250 }, "BulletSpeed"),
       initPickup({ x: 580, y: 550 }, "BulletSpeed"),
       initPickup({ x: 710, y: 85 }, "Health"),

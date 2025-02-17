@@ -19,7 +19,7 @@ export const PLAYER_RADIUS = 10;
 export const playerDamageOnCooldown = (player: PlayerEntity) =>
   onCooldown(player.lastDamagedTimestamp, PLAYER_IFRAME_DURATION_MS);
 export const dashOnCooldown = (player: PlayerEntity) =>
-  onCooldown(player.dash.lastDashTimestamp, DASH_COOLDOWN_MS);
+  onCooldown(player?.dash.lastDashTimestamp, DASH_COOLDOWN_MS);
 
 export const damagePlayer = (player: PlayerEntity, damage: number) => {
   player.health -= damage;

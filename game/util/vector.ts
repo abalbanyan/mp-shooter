@@ -18,3 +18,14 @@ export const scale = (v: Vector, s: number) => ({
   x: v.x * s,
   y: v.y * s,
 });
+
+export const perpendiculars = (v: Vector): [Vector, Vector] => [
+  {
+    x: -v.y,
+    y: v.x,
+  },
+  {
+    x: v.y,
+    y: -v.x,
+  },
+];

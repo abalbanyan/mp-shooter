@@ -19,6 +19,11 @@ export const PICKUPS: Record<PickupType, HTMLImageElement[]> = {
     "/powerup/bullet_speed/bullet_speed_2.png",
     "/powerup/bullet_speed/bullet_speed_3.png",
   ]),
+  BulletSize: loadImages([
+    "/bulletsize/bulletsize_1.png",
+    "/bulletsize/bulletsize_2.png",
+    "/bulletsize/bulletsize_3.png",
+  ]),
   Health: loadImages([
     "/health/health_1.png",
     "/health/health_2.png",

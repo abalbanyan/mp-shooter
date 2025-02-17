@@ -131,6 +131,7 @@ export const initNewPlayer = (id: string) => {
     powerups: {
       Speed: { timestamp: undefined },
       BulletSpeed: { timestamp: undefined },
+      BulletSize: { timestamp: undefined },
     },
   };
 };

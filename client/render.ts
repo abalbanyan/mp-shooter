@@ -10,6 +10,7 @@ import {
 import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
 import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
+import { hasPowerup } from "../game/entities/powerup";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -40,6 +41,7 @@ export const renderGameState = (gameState: GameState) => {
     if (!player) {
       return;
     }
+    console.log(player.powerups);
     drawBullet(ctx, bullet, player.color);
   });
 

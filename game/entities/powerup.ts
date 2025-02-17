@@ -1,18 +1,22 @@
 import { PlayerEntity } from "../types";
 import { onCooldown } from "../util/cooldown";
 
-export type PowerupType = "Speed" | "BulletSpeed";
+export type PowerupType = "Speed" | "BulletSpeed" | "BulletSize";
 
 const POWERUP_DURATION_MAP: Record<PowerupType, { duration: number }> = {
   Speed: {
-    duration: 5_000,
+    duration: 6_000,
   },
   BulletSpeed: {
-    duration: 5_000,
+    duration: 6_000,
+  },
+  BulletSize: {
+    duration: 8_000,
   },
 };
 
 export const hasPowerup = (player: PlayerEntity, type: PowerupType) => {
+  console.log(player.powerups);
   return (
     player.powerups[type] &&
     onCooldown(

@@ -49,6 +49,7 @@ export type BulletEntity = {
   /** normalized vector, direction the bullet will travel */
   direction: Vector;
   deleted?: boolean;
+  big: boolean;
 };
 
 export type WallEntity = {
