@@ -19,7 +19,6 @@ const POWERUP_DURATION_MAP: Record<PowerupType, { duration: number }> = {
 };
 
 export const hasPowerup = (player: PlayerEntity, type: PowerupType) => {
-  console.log(player.powerups);
   return (
     player.powerups[type] &&
     onCooldown(

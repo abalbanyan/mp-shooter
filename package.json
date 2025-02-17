@@ -6,7 +6,6 @@
   "scripts": {
     "server": "tsx ./server/index.ts",
     "server-dev": "nodemon",
-    "// server-dev": "nodemon --watch ./server --watch ./game --exec npm run server",
     "client-dev": "vite",
     "client-build": "vite build"
   },

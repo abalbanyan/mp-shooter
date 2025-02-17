@@ -207,14 +207,6 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
     if (playerDamageOnCooldown(player)) {
       return;
     }
-
-    if (hasPowerup(player, "BulletSize")) {
-      console.log("bla");
-    }
-    if (hasPowerup(player, "BulletSpeed")) {
-      console.log("blahaj");
-    }
-
     if (isBulletIntersectingPlayerPos(player.pos, bullet)) {
       deleteBullet(bullet);
       cleanupDeletedBullets(gameState);

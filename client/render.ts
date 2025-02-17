@@ -41,7 +41,6 @@ export const renderGameState = (gameState: GameState) => {
     if (!player) {
       return;
     }
-    console.log(player.powerups);
     drawBullet(ctx, bullet, player.color);
   });
 
@@ -71,8 +70,8 @@ export const renderGameState = (gameState: GameState) => {
   ctx.font = "12px Arial";
 
   // debug
-  ctx.fillStyle = "red";
-  ctx.fillText(JSON.stringify(context.debugInfo), 60, 50);
+  // ctx.fillStyle = "red";
+  // ctx.fillText(JSON.stringify(context.debugInfo), 60, 50);
 };
 
 function resizeCanvas() {

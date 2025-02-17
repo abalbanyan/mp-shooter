@@ -2,7 +2,7 @@ import { PlayerEntity, Vector } from "../../../game/types";
 import { onCooldown } from "../../../game/util/cooldown";
 import { context } from "../../context";
 
-const DEATH_ANIMATION_DURATION_MS = 1500;
+const DEATH_ANIMATION_DURATION_MS = 2000;
 
 /**
  * Spawned client-side only when a player dies. These are used to show a death animation.
