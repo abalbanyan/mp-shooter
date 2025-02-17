@@ -32,20 +32,25 @@ const PICKUP_PROPERTY_MAP: Record<
   },
 };
 
+export const isPickupIntersectingPlayerPos = (
+  playerPos: Vector,
+  pickup: PickupEntity
+) => {
+  return circleIntersectsCircle(
+    pickup.pos,
+    PICKUP_RADIUS,
+    playerPos,
+    PLAYER_RADIUS
+  );
+};
+
 export const pickupCollision = (gameState: GameState, pickup: PickupEntity) => {
   const players = Object.values(gameState.players);
 
   players.forEach((player) => {
     if (pickup.collectedAtTimestamp) return;
 
-    const intersects = circleIntersectsCircle(
-      pickup.pos,
-      PICKUP_RADIUS,
-      player.pos,
-      PLAYER_RADIUS
-    );
-
-    if (intersects) {
+    if (isPickupIntersectingPlayerPos(player.pos, pickup)) {
       PICKUP_PROPERTY_MAP[pickup.type].onPickup(player);
       pickup.collectedAtTimestamp = new Date().getTime();
     }

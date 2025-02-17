@@ -7,7 +7,14 @@ import {
   MAP_WIDTH,
 } from "../game/constants";
 import { context } from "./context";
-import { PLAYER_MAX_HEALTH } from "../game/entities/player";
+import { PLAYER_MAX_HEALTH, PLAYER_RADIUS } from "../game/entities/player";
+import { isBulletIntersectingPlayerPos } from "../game/entities/bullet";
+import { Vector } from "../game/types";
+import { isPickupIntersectingPlayerPos } from "../game/entities/pickup";
+import {
+  circleIntersectsAABB,
+  circleIntersectsCircle,
+} from "../game/util/collision";
 
 const uniqueNamesConfig: Config = {
   dictionaries: [starWars],
@@ -33,19 +40,55 @@ const assignColor = (myColor = "") => {
   );
 };
 
-export const initNewPlayer = (id: string) => {
-  console.log("Initializing new player!", id);
-  context.gameState.players[id] = {
-    color: assignColor(),
-    id: id,
-    name: uniqueNamesGenerator(uniqueNamesConfig),
-    lastDamagedTimestamp: new Date().getTime(),
-    dead: false,
-    dash: {
-      isDashing: false,
-      dashDistanceElapsed: 0,
-    },
-    pos: {
+const isPlayerPosIntersectingCollisionEntities = (playerPos: Vector) => {
+  const bullets = context.gameState.bullets;
+  for (let i = 0; i < bullets.length; i++) {
+    if (isBulletIntersectingPlayerPos(playerPos, bullets[i])) {
+      return true;
+    }
+  }
+
+  const pickups = context.gameState.pickups;
+  for (let i = 0; i < pickups.length; i++) {
+    if (isPickupIntersectingPlayerPos(playerPos, pickups[i])) {
+      return true;
+    }
+  }
+  const walls = context.gameState.walls;
+  for (let i = 0; i < walls.length; i++) {
+    const { isIntersecting } = circleIntersectsAABB(
+      playerPos,
+      PLAYER_RADIUS,
+      walls[i].box
+    );
+    if (isIntersecting) {
+      return true;
+    }
+  }
+
+  const players = Object.values(context.gameState.players);
+  for (let i = 0; i < players.length; i++) {
+    if (
+      circleIntersectsCircle(
+        playerPos,
+        PLAYER_RADIUS,
+        players[i].pos,
+        PLAYER_RADIUS
+      )
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const getRandomPlayerPos = () => {
+  let iterations = 0; // Just in case, let's avoid an infinite loop.
+  let newPlayerPos: Vector;
+  do {
+    iterations++;
+    newPlayerPos = {
       // TODO: Don't spawn on walls, bullets, or pickups
       x:
         Math.floor(
@@ -61,7 +104,29 @@ export const initNewPlayer = (id: string) => {
         ) +
         BOUNDING_WALL_SIZE +
         100,
+    };
+  } while (
+    iterations < 20 &&
+    isPlayerPosIntersectingCollisionEntities(newPlayerPos)
+  );
+
+  return newPlayerPos;
+};
+
+export const initNewPlayer = (id: string) => {
+  console.log("Initializing new player!", id);
+
+  context.gameState.players[id] = {
+    color: assignColor(),
+    id: id,
+    name: uniqueNamesGenerator(uniqueNamesConfig),
+    lastDamagedTimestamp: new Date().getTime(),
+    dead: false,
+    dash: {
+      isDashing: false,
+      dashDistanceElapsed: 0,
     },
+    pos: getRandomPlayerPos(),
     health: PLAYER_MAX_HEALTH,
     powerups: {
       Speed: { timestamp: undefined },

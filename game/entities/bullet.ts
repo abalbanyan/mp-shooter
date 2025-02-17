@@ -64,6 +64,18 @@ export const cleanupBulletsFromRemovedPlayer = (
   );
 };
 
+export const isBulletIntersectingPlayerPos = (
+  playerPos: Vector,
+  bullet: BulletEntity
+) =>
+  rayIntersectsCircle(
+    bullet.pos,
+    bullet.direction,
+    20,
+    playerPos,
+    PLAYER_RADIUS
+  );
+
 /**
  * Detect if the bullet is colliding with another entity and take appropriate actions.
  * TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players
@@ -99,14 +111,8 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
     if (playerDamageOnCooldown(player)) {
       return;
     }
-    const intersect = rayIntersectsCircle(
-      bullet.pos,
-      bullet.direction,
-      20,
-      player.pos,
-      PLAYER_RADIUS
-    );
-    if (intersect) {
+
+    if (isBulletIntersectingPlayerPos(player.pos, bullet)) {
       deleteBullet(bullet);
       cleanupDeletedBullets(gameState);
       damagePlayer(player, BULLET_DAMAGE);
