@@ -64,17 +64,6 @@ export const cleanupBulletsFromRemovedPlayer = (
   );
 };
 
-export const drawBullet = (
-  ctx: CanvasRenderingContext2D,
-  bullet: BulletEntity,
-  color: string
-) => {
-  ctx.beginPath();
-  ctx.arc(bullet.pos.x, bullet.pos.y, 3, 0, Math.PI * 2);
-  ctx.fillStyle = color;
-  ctx.fill();
-};
-
 /**
  * Detect if the bullet is colliding with another entity and take appropriate actions.
  * TODO: broad-phase optimizations, e.g. partitioning world into grid and only checking grid items where there are players

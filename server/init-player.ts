@@ -7,6 +7,7 @@ import {
   MAP_WIDTH,
 } from "../game/constants";
 import { context } from "./context";
+import { PLAYER_MAX_HEALTH } from "../game/entities/player";
 
 const uniqueNamesConfig: Config = {
   dictionaries: [starWars],
@@ -60,7 +61,7 @@ export const initNewPlayer = (id: string) => {
         BOUNDING_WALL_SIZE +
         100,
     },
-    health: 5,
+    health: PLAYER_MAX_HEALTH,
     powerups: {
       Speed: { timestamp: undefined },
       BulletSpeed: { timestamp: undefined },

@@ -21,6 +21,19 @@ export const POWERUP_IMAGES: Record<PowerupType, HTMLImageElement[]> = {
   ]),
 };
 
+export const HEARTS = {
+  full: loadImages([
+    "/hearts/heart_1.png",
+    "/hearts/heart_2.png",
+    "/hearts/heart_3.png",
+  ]),
+  broke: loadImages([
+    "/hearts/heart_broke_12.png",
+    "/hearts/heart_broke_22.png",
+    "/hearts/heart_broke_32.png",
+  ]),
+};
+
 export const TILES = {
   walls: {
     base: loadImage("/walls/base_wall_tile.png"),
