@@ -13,25 +13,31 @@ const PICKUP_PROPERTY_MAP: Record<
   { respawn: number; onPickup: (player: PlayerEntity) => void }
 > = {
   BulletSize: {
-    respawn: 10_000,
+    respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
       player.powerups["BulletSize"] = { timestamp: new Date().getTime() };
     },
   },
   Speed: {
-    respawn: 10_000,
+    respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
       player.powerups["Speed"] = { timestamp: new Date().getTime() };
     },
   },
+  Spread: {
+    respawn: 8_000,
+    onPickup: (player: PlayerEntity) => {
+      player.powerups["Spread"] = { timestamp: new Date().getTime() };
+    },
+  },
   BulletSpeed: {
-    respawn: 10_000,
+    respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
       player.powerups["BulletSpeed"] = { timestamp: new Date().getTime() };
     },
   },
   Health: {
-    respawn: 10_000,
+    respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
       player.health = Math.min(PLAYER_MAX_HEALTH, (player.health += 2));
     },

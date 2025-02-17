@@ -132,6 +132,7 @@ export const initNewPlayer = (id: string) => {
       Speed: { timestamp: undefined },
       BulletSpeed: { timestamp: undefined },
       BulletSize: { timestamp: undefined },
+      Spread: { timestamp: undefined },
     },
   };
 };

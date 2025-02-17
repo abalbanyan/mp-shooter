@@ -4,7 +4,7 @@ import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
 import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { hasPowerup } from "./powerup";
-import { perpendiculars } from "../util/vector";
+import { perpendiculars, rotate } from "../util/vector";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 250;
@@ -14,6 +14,9 @@ const BULLET_DISTANCE_SPAWN = 5;
 
 const BULLET_RADIUS = 4;
 const BIG_BULLET_RADIUS = 12;
+
+const BULLET_SPREAD_LEFT_DEGREE = (-35 * Math.PI) / 180;
+const BULLET_SPREAD_RIGHT_DEGREE = (35 * Math.PI) / 180;
 
 /**
  * Initializes a bullet and adds it to the provided game state. provided the bullet is not off-cooldown.
@@ -48,6 +51,44 @@ export const initBulletOnCooldown = (
     },
     big: hasPowerup(player, "BulletSize"),
   });
+
+  if (hasPowerup(player, "Spread")) {
+    const leftTrajectory = rotate(
+      player.bulletTrajectory,
+      BULLET_SPREAD_LEFT_DEGREE
+    );
+    gameState.bullets.push({
+      pos: {
+        x: player.pos.x + leftTrajectory.x * BULLET_DISTANCE_SPAWN,
+        y: player.pos.y + leftTrajectory.y * BULLET_DISTANCE_SPAWN,
+      },
+      playerId: player.id,
+      color: player.color,
+      direction: {
+        x: leftTrajectory.x,
+        y: leftTrajectory.y,
+      },
+      big: hasPowerup(player, "BulletSize"),
+    });
+
+    const rightTrajectory = rotate(
+      player.bulletTrajectory,
+      BULLET_SPREAD_RIGHT_DEGREE
+    );
+    gameState.bullets.push({
+      pos: {
+        x: player.pos.x + rightTrajectory.x * BULLET_DISTANCE_SPAWN,
+        y: player.pos.y + rightTrajectory.y * BULLET_DISTANCE_SPAWN,
+      },
+      playerId: player.id,
+      color: player.color,
+      direction: {
+        x: rightTrajectory.x,
+        y: rightTrajectory.y,
+      },
+      big: hasPowerup(player, "BulletSize"),
+    });
+  }
 };
 
 /**
