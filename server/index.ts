@@ -31,6 +31,7 @@ app.get("/api/test", (req, res) => {
 const broadcastStateUpdate = () => {
   io.emit("stateUpdate", {
     gameState: context.gameState,
+    timestamp: new Date().getTime(),
   } satisfies IOMessageStateUpdate);
 };
 
@@ -72,7 +73,7 @@ io.on("connection", (socket: Socket) => {
  * This is the game loop.
  */
 setInterval(() => {
-  // delta might not always be 30 since the JS event loop doesn't guarantee the interval runs every 30ms.
+  // delta might not always be equal to tick rate since the JS event loop doesn't guarantee the interval runs in a fixed time
   const now = performance.now();
   const delta = (now - context.lastTime) / 1000;
   context.lastTime = now;
@@ -89,7 +90,7 @@ setInterval(() => {
   });
 
   broadcastStateUpdate();
-}, 30);
+}, 15);
 
 io.httpServer.listen(port, () => {
   console.log(`Server listening on port ${port}`);

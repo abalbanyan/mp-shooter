@@ -16,6 +16,7 @@ import {
   cleanupPlayerGhosts,
   createPlayerGhostsForPlayers,
 } from "./rendering/entities/player-ghost";
+import { pushGameStateBuffer } from "./rendering/interpolation";
 
 const socket = io();
 
@@ -29,7 +30,6 @@ socket.on("connect", () => {
 /**
  * Update client gameState based on values returned from the server stateUpdate.
  * TODO:
- *   - interpolating position
  *   - don't overwrite player bulletTrajectory
  *   - combine these entities into a single entities property for easier copying when we add new entity types
  */
@@ -40,15 +40,11 @@ const updateClientGameState = (newState: GameState) => {
   context.gameState.pickups = newState.pickups;
 };
 
+/**
+ * Server reconciliation.
+ */
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
-  context.gameStateBuffer.push({
-    gameState: data.gameState,
-    timestamp: new Date().getTime(),
-  });
-  if (context.gameStateBuffer.length > 10) {
-    context.gameStateBuffer.shift();
-  }
-
+  pushGameStateBuffer(data.gameState, data.timestamp);
   updateClientGameState(data.gameState);
   renderGameState(context.gameState);
 });
@@ -83,14 +79,19 @@ const gameLoop = () => {
   requestAnimationFrame(gameLoop);
 };
 
-// Send the current input state to the server every 50ms.
-setInterval(() => {
+/**
+ * Send the current input state to the server periodically.
+ */
+const sendInput = () => {
   // If no assigned id, don't take any actions yet.
   if (!context.id) {
     return;
   }
 
   const player = context.gameState.players[context.id];
+  if (!player || player.dead) {
+    return;
+  }
 
   // Send all buffered actions to the server.
   if (context.inputBuffer.length > 0) {
@@ -101,4 +102,5 @@ setInterval(() => {
 
     context.inputBuffer = [];
   }
-}, 30);
+};
+setInterval(sendInput, 15);

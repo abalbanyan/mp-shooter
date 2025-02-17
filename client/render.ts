@@ -3,10 +3,7 @@ import { drawBullet } from "./rendering/entities/bullet";
 import { drawWall } from "./rendering/entities/wall";
 import { context } from "./context";
 import { COLORS } from "../game/constants";
-import {
-  drawPlayer,
-  drawPlayerDashCooldownBar,
-} from "./rendering/entities/player";
+import { drawPlayer } from "./rendering/entities/player";
 import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
 import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
@@ -49,10 +46,6 @@ export const renderGameState = (gameState: GameState) => {
   });
 
   drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
-  if (context.id) {
-    const myPlayer = gameState.players[context.id];
-    drawPlayerDashCooldownBar(ctx, myPlayer);
-  }
 
   gameState.pickups.forEach((pickup) => {
     drawPickup(ctx, pickup);

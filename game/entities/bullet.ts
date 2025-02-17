@@ -12,11 +12,9 @@ const BULLET_COOLDOWN_MS = 200;
 const BULLET_COOLDOWN_WITH_POWERUP_MS = 50;
 const BULLET_DISTANCE_SPAWN = 5;
 
-const BULLET_RADIUS = 4;
-const BIG_BULLET_RADIUS = 12;
-
-const BULLET_SPREAD_LEFT_DEGREE = (-35 * Math.PI) / 180;
-const BULLET_SPREAD_RIGHT_DEGREE = (35 * Math.PI) / 180;
+const BULLET_SPREAD_DEGREE = 30;
+const BULLET_SPREAD_LEFT_DEGREE = (-BULLET_SPREAD_DEGREE * Math.PI) / 180;
+const BULLET_SPREAD_RIGHT_DEGREE = (BULLET_SPREAD_DEGREE * Math.PI) / 180;
 
 /**
  * Initializes a bullet and adds it to the provided game state. provided the bullet is not off-cooldown.

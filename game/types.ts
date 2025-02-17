@@ -92,13 +92,14 @@ export type PlayerInput = {
 };
 
 /**
- * Message sent by server to clients to force a state update.
+ * Message sent by server to clients for reconcilliation
  */
 export type IOMessageStateUpdate = {
   /**
    * For simplicity, we just send the entire game state.
    */
   gameState: GameState;
+  timestamp: number;
 };
 
 /**
