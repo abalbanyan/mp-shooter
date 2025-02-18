@@ -15,25 +15,25 @@ const PICKUP_PROPERTY_MAP: Record<
   BulletSize: {
     respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
-      player.powerups["BulletSize"] = { timestamp: new Date().getTime() };
+      player.powerups["BulletSize"] = { timestamp: Date.now() };
     },
   },
   Speed: {
     respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
-      player.powerups["Speed"] = { timestamp: new Date().getTime() };
+      player.powerups["Speed"] = { timestamp: Date.now() };
     },
   },
   Spread: {
     respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
-      player.powerups["Spread"] = { timestamp: new Date().getTime() };
+      player.powerups["Spread"] = { timestamp: Date.now() };
     },
   },
   BulletSpeed: {
     respawn: 8_000,
     onPickup: (player: PlayerEntity) => {
-      player.powerups["BulletSpeed"] = { timestamp: new Date().getTime() };
+      player.powerups["BulletSpeed"] = { timestamp: Date.now() };
     },
   },
   Health: {
@@ -64,7 +64,7 @@ export const pickupCollision = (gameState: GameState, pickup: PickupEntity) => {
 
     if (isPickupIntersectingPlayerPos(player.pos, pickup)) {
       PICKUP_PROPERTY_MAP[pickup.type].onPickup(player);
-      pickup.collectedAtTimestamp = new Date().getTime();
+      pickup.collectedAtTimestamp = Date.now();
     }
   });
 };

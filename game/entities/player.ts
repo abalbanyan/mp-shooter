@@ -23,7 +23,7 @@ export const dashOnCooldown = (player: PlayerEntity) =>
 
 export const damagePlayer = (player: PlayerEntity, damage: number) => {
   player.health -= damage;
-  player.lastDamagedTimestamp = new Date().getTime();
+  player.lastDamagedTimestamp = Date.now();
   if (player.health <= 0) {
     player.dead = true;
   }
@@ -37,13 +37,14 @@ const beginDash = (player: PlayerEntity) => {
   if (!player.bulletTrajectory) {
     return;
   }
+  console.debug("dash!");
 
   player.dash.normalizedDashDirection = {
     x: player.bulletTrajectory.x,
     y: player.bulletTrajectory.y,
   };
   player.dash.isDashing = true;
-  player.dash.lastDashTimestamp = new Date().getTime();
+  player.dash.lastDashTimestamp = Date.now();
   player.dash.dashDistanceElapsed = 0;
 };
 

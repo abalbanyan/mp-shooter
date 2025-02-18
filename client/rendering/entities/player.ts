@@ -19,7 +19,7 @@ const drawPlayerDashCooldownBar = (
   if (!dashOnCooldown(player)) return;
   if (!player.dash.lastDashTimestamp) return;
 
-  const now = new Date().getTime();
+  const now = Date.now();
   const timeRemaining = Math.max(
     0,
     player.dash.lastDashTimestamp + DASH_COOLDOWN_MS - now
@@ -28,7 +28,7 @@ const drawPlayerDashCooldownBar = (
 
   ctx.fillStyle = COLORS.cooldownBar;
   if (localStorage.getItem("debug")) {
-    console.log(PLAYER_RADIUS * 2 * progressLeft, progressLeft, timeRemaining);
+    console.log(player.dash.lastDashTimestamp, progressLeft, timeRemaining);
   }
   ctx.fillRect(
     interpolatedPlayerPos.x - PLAYER_RADIUS - 5,

@@ -33,7 +33,7 @@ export const createPlayerTrailsForPlayers = (players: PlayerEntity[]) => {
       pos: player.pos,
       color: player.color,
       playerId: player.id,
-      spawnedAt: new Date().getTime(),
+      spawnedAt: Date.now(),
     });
   });
 };
@@ -42,8 +42,7 @@ export const drawPlayerTrail = (
   ctx: CanvasRenderingContext2D,
   trail: PlayerTrailEntity
 ) => {
-  const remainingTimeRatio =
-    (new Date().getTime() - trail.spawnedAt) / TRAIL_DURATION_MS;
+  const remainingTimeRatio = (Date.now() - trail.spawnedAt) / TRAIL_DURATION_MS;
   const opacity = (1 - remainingTimeRatio) ** 2;
 
   ctx.beginPath();

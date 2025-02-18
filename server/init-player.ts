@@ -119,7 +119,7 @@ export const initNewPlayer = (id: string, name?: string) => {
     color: assignColor(),
     id: id,
     name: name || uniqueNamesGenerator(uniqueNamesConfig),
-    lastDamagedTimestamp: new Date().getTime(),
+    lastDamagedTimestamp: Date.now(),
     dead: false,
     dash: {
       isDashing: false,

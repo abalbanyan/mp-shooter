@@ -48,7 +48,7 @@ app.get("*", (req, res) => {
 const broadcastStateUpdate = () => {
   io.emit("stateUpdate", {
     gameState: context.gameState,
-    timestamp: new Date().getTime(),
+    timestamp: Date.now(),
   } satisfies IOMessageStateUpdate);
 };
 

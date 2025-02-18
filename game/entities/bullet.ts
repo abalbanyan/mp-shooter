@@ -34,7 +34,7 @@ export const initBulletOnCooldown = (
     return;
   }
 
-  player.lastBulletFiredTimestamp = new Date().getTime();
+  player.lastBulletFiredTimestamp = Date.now();
 
   gameState.bullets.push({
     pos: {

@@ -18,7 +18,7 @@ export const initPlayerGhostEntity = (player: PlayerEntity) => ({
   pos: player.pos,
   color: player.color,
   playerId: player.id,
-  spawnedAt: new Date().getTime(),
+  spawnedAt: Date.now(),
 });
 
 export const cleanupPlayerGhosts = () => {
@@ -46,7 +46,7 @@ export const drawPlayerGhostEntity = (
 
   const remainingTimeRatio = Math.min(
     1,
-    (new Date().getTime() - ghost.spawnedAt) / DEATH_ANIMATION_DURATION_MS
+    (Date.now() - ghost.spawnedAt) / DEATH_ANIMATION_DURATION_MS
   );
   const opacity = (1 - remainingTimeRatio) ** 2;
 

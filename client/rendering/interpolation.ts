@@ -25,7 +25,7 @@ export const getInterpolatedPlayerPosition = (player: PlayerEntity): Vector => {
     return player.pos;
   }
 
-  const now = new Date().getTime();
+  const now = Date.now();
   const renderTime = now - INTERPOLATION_DELAY_MS;
 
   if (renderTime < buffer[0].timestamp) {

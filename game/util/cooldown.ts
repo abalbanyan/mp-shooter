@@ -5,6 +5,6 @@ export const onCooldown = (
   if (!timeStamp) {
     return false;
   }
-  const now = new Date().getTime();
+  const now = Date.now();
   return now < timeStamp + cooldownMs;
 };
