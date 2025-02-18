@@ -25,13 +25,11 @@ const port = 3000;
  */
 
 app.get("/api/suggest-name", (req, res) => {
-  res
-    .status(200)
-    .send(
-      JSON.stringify({
-        name: getRandomName(),
-      } satisfies GetSuggestedNameResponse)
-    );
+  res.status(200).send(
+    JSON.stringify({
+      name: getRandomName(),
+    } satisfies GetSuggestedNameResponse)
+  );
 });
 
 /**

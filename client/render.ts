@@ -83,9 +83,9 @@ function resizeCanvas() {
   // Scaling using dpr makes the canvas much crisper, especially on high-resolution screens.
   // canvas.width = window.innerWidth * dpr;
   // canvas.height = window.innerHeight * dpr;
-  canvas.height = window.innerHeight * dpr;
+  canvas.height = context.gameState.map.h * dpr;
   canvas.width = context.gameState.map.w * dpr;
-  canvas.style.height = `100vh`;
+  canvas.style.height = `${context.gameState.map.w}px`;
   canvas.style.width = `${context.gameState.map.w}px`;
 
   const ctx = canvas.getContext("2d");

@@ -37,6 +37,18 @@ socket.on("connect", () => {
  */
 const updateClientGameState = (newState: GameState) => {
   context.gameState.map = newState.map;
+
+  // debugging
+  // const clientPos = Object.values(context.gameState.players)[0]?.pos;
+  // const serverPos = Object.values(newState.players)[0]?.pos;
+  // if (clientPos && serverPos) {
+  //   if (
+  //     Math.floor(clientPos.x) !== Math.floor(serverPos.x) ||
+  //     Math.floor(clientPos.y) !== Math.floor(serverPos.y)
+  //   ) {
+  //     console.log("RECONCILLIATION", { c: clientPos.x, s: serverPos.x });
+  //   }
+  // }
   context.gameState.players = newState.players;
   context.gameState.bullets = newState.bullets;
   context.gameState.walls = newState.walls;
@@ -62,6 +74,10 @@ const gameLoop = () => {
 
   updateDelta();
   playerProcessInput();
+  context.inputBuffer.push({
+    delta: context.delta,
+    input: context.keys,
+  });
 
   // fps
   // context.debugInfo = Math.round(1 / context.delta);
@@ -74,11 +90,6 @@ const gameLoop = () => {
   createPlayerTrailsForPlayers(players);
   createPlayerGhostsForPlayers(players);
   cleanupPlayerGhosts();
-
-  context.inputBuffer.push({
-    delta: context.delta,
-    input: context.keys,
-  });
 
   renderGameState(context.gameState);
   requestAnimationFrame(gameLoop);

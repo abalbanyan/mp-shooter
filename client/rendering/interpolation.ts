@@ -2,7 +2,7 @@ import { GameState, PlayerEntity, Vector } from "../../game/types";
 import { context } from "../context";
 
 const INTERPOLATION_BUFFER_SIZE = 2;
-const INTERPOLATION_DELAY_MS = 80;
+const INTERPOLATION_DELAY_MS = 120;
 
 /**
  * Returns the interpolated position of the player based on the previous server updates, used for rendering only.

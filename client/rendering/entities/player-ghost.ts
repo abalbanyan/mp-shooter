@@ -29,7 +29,10 @@ export const cleanupPlayerGhosts = () => {
 
 export const createPlayerGhostsForPlayers = (players: PlayerEntity[]) => {
   players.forEach((player) => {
-    if (player.dead) {
+    if (
+      player.dead &&
+      !context.playerGhosts.some((ghost) => player.id === ghost.playerId)
+    ) {
       context.playerGhosts.push(initPlayerGhostEntity(player));
     }
   });
