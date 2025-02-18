@@ -2,7 +2,7 @@ import { GameState, PlayerEntity, Vector } from "../../game/types";
 import { context } from "../context";
 
 const INTERPOLATION_BUFFER_SIZE = 2;
-const INTERPOLATION_DELAY_MS = 120;
+const INTERPOLATION_DELAY_MS = 100;
 
 /**
  * Returns the interpolated position of the player based on the previous server updates, used for rendering only.
@@ -30,7 +30,8 @@ export const getInterpolatedPlayerPosition = (player: PlayerEntity): Vector => {
 
   if (renderTime < buffer[0].timestamp) {
     console.debug(
-      "unexpected! current time is before first position in buffer"
+      "unexpected! current time is before first position in buffer. diff:",
+      renderTime - buffer[0].timestamp
     );
     return prevPlayerState.pos;
   }
@@ -43,7 +44,7 @@ export const getInterpolatedPlayerPosition = (player: PlayerEntity): Vector => {
 
   const t =
     (renderTime - buffer[0].timestamp) /
-    (buffer[buffer.length - 1].timestamp - buffer[0].timestamp);
+    (buffer[1].timestamp - buffer[0].timestamp);
 
   const clampT = Math.max(0, Math.min(1, t));
 
@@ -57,12 +58,18 @@ export const getInterpolatedPlayerPosition = (player: PlayerEntity): Vector => {
   };
 };
 
+/**
+ * Makes a deep copy of gameState and adds it to the buffer.
+ */
 export const pushGameStateBuffer = (
   gameState: GameState,
   timestamp: number
 ) => {
   // We don't need to sort by timestamp since socket.io guarantees message order
-  context.gameStateBuffer.push({ gameState, timestamp });
+  context.gameStateBuffer.push({
+    gameState: structuredClone(gameState),
+    timestamp,
+  });
   if (context.gameStateBuffer.length > INTERPOLATION_BUFFER_SIZE) {
     context.gameStateBuffer.shift();
   }

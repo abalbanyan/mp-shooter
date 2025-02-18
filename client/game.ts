@@ -76,7 +76,7 @@ const gameLoop = () => {
   playerProcessInput();
   context.inputBuffer.push({
     delta: context.delta,
-    input: context.keys,
+    input: structuredClone(context.keys),
   });
 
   // fps
