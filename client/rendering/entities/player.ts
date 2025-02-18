@@ -28,7 +28,7 @@ const drawPlayerDashCooldownBar = (
 
   ctx.fillStyle = COLORS.cooldownBar;
   if (localStorage.getItem("debug")) {
-    console.log(PLAYER_RADIUS * 2 * progressLeft);
+    console.log(PLAYER_RADIUS * 2 * progressLeft, progressLeft, timeRemaining);
   }
   ctx.fillRect(
     interpolatedPlayerPos.x - PLAYER_RADIUS - 5,
