@@ -13,6 +13,8 @@ type ClientContext = {
   keys: PlayerInput;
   inputBuffer: IOMessageInput["inputs"];
 
+  joinedGame: boolean;
+
   gameState: GameState;
   gameStateBuffer: {
     timestamp: number;
@@ -39,6 +41,8 @@ export const context: ClientContext = {
 
   inputBuffer: [],
   id: null,
+  joinedGame: false,
+
   gameState: {
     players: {},
     bullets: [],
@@ -66,7 +70,7 @@ export const context: ClientContext = {
   playerGhosts: [],
 };
 
-context.debugInfo = context.mousePos;
+// context.debugInfo = context.mousePos;
 
 export const updateDelta = () => {
   const now = performance.now();

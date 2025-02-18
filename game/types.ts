@@ -1,3 +1,8 @@
+/**
+ * TODO: As this file as grown, I think it makes more sense to colocate entity type declararations
+ * with the entities themselves.
+ */
+
 import type { PowerupType } from "../game/entities/powerup";
 import type { PickupType } from "./entities/pickup";
 
@@ -68,6 +73,10 @@ export type GameState = {
   bullets: BulletEntity[];
   walls: WallEntity[];
   pickups: PickupEntity[];
+  map?: {
+    h: number;
+    w: number;
+  };
 };
 
 export type SocketEventGameStateUpdate = {
@@ -117,4 +126,15 @@ export type IOMessageInput = {
     delta: number;
   }[];
   bulletTrajectory: PlayerEntity["bulletTrajectory"];
+};
+
+/**
+ * Message sent by clients to notify that they have selected a name and would like to join the game.
+ */
+export type IOMessagePlayerJoin = {
+  name?: string;
+};
+
+export type GetSuggestedNameResponse = {
+  name: string;
 };

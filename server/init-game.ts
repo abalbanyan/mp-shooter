@@ -15,4 +15,8 @@ export const initialGameState: GameState = {
     initPickup({ x: 110, y: 700 }, "Health"),
   ],
   walls: initBoundingWalls(MAP_HEIGHT, MAP_WIDTH, BOUNDING_WALL_SIZE),
+  map: {
+    h: 800,
+    w: 800,
+  },
 };

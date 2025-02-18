@@ -7,7 +7,6 @@ import { drawPlayer } from "./rendering/entities/player";
 import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
 import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
-import { hasPowerup } from "../game/entities/powerup";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -25,6 +24,9 @@ const drawTargetReticule = (
   ctx.stroke();
 };
 
+/**
+ * TODO: Viewport + camera
+ */
 export const renderGameState = (gameState: GameState) => {
   const canvas = context.canvas;
   const ctx = canvas.getContext("2d");
@@ -63,17 +65,28 @@ export const renderGameState = (gameState: GameState) => {
   ctx.font = "12px Arial";
 
   // debug
-  // ctx.fillStyle = "red";
-  // ctx.fillText(JSON.stringify(context.debugInfo), 60, 50);
+  if (context.debugInfo) {
+    ctx.fillStyle = "red";
+    ctx.fillText(JSON.stringify(context.debugInfo), 100, 80);
+  }
 };
 
 function resizeCanvas() {
+  if (!context.gameState?.map || !context.canvas) {
+    setTimeout(() => resizeCanvas(), 30);
+    return;
+  }
+
   const canvas = context.canvas;
   const dpr = window.devicePixelRatio || 1;
 
   // Scaling using dpr makes the canvas much crisper, especially on high-resolution screens.
-  canvas.width = window.innerWidth * dpr;
+  // canvas.width = window.innerWidth * dpr;
+  // canvas.height = window.innerHeight * dpr;
   canvas.height = window.innerHeight * dpr;
+  canvas.width = context.gameState.map.w * dpr;
+  canvas.style.height = `100vh`;
+  canvas.style.width = `${context.gameState.map.w}px`;
 
   const ctx = canvas.getContext("2d");
   if (ctx) {

@@ -3,29 +3,48 @@ import { createServer } from "http";
 import path from "path";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
-import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
+import type {
+  GetSuggestedNameResponse,
+  IOMessageInput,
+  IOMessagePlayerJoin,
+  IOMessageStateUpdate,
+} from "../game/types";
 import { context } from "./context";
 import { playerActOnInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
-import { bulletAct } from "../game/entities/bullet";
 import { actOnEntities } from "../game/act-on-entities";
+import { getRandomName } from "./util/random-name";
 
 const app = express();
 const httpServer = createServer(app);
 const io = new SocketIOServer(httpServer);
 const port = 3000;
 
-app.use(express.static(path.join(__dirname, "../dist")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../dist/index.html"));
-});
+/**
+ * TODO: Split out socket.io event management.
+ */
 
-app.get("/api/test", (req, res) => {
+app.get("/api/suggest-name", (req, res) => {
   res
     .status(200)
     .send(
-      "Pokem ipsum dolor sit amet Porygon2 Emolga Herdier Chansey Kecleon Munna."
+      JSON.stringify({
+        name: getRandomName(),
+      } satisfies GetSuggestedNameResponse)
     );
+});
+
+/**
+ * In a serverless Railway app, socket requests don't keep the service from sleeping,
+ * so we send a heartbeat periodically to prevent the service from sleeping.
+ */
+app.get("/api/heartbeat", (req, res) => {
+  res.status(200).send("");
+});
+
+app.use(express.static(path.join(__dirname, "../dist")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/index.html"));
 });
 
 const broadcastStateUpdate = () => {
@@ -47,9 +66,8 @@ io.on("connection", (socket: Socket) => {
 
   // Init new player.
   // TODO: This should happen later, once we allow the user to choose their own name.
-  initNewPlayer(socket.id);
-
-  broadcastStateUpdate();
+  // initNewPlayer(socket.id);
+  // broadcastStateUpdate();
 
   // Note: socket.io guarantees message order, so we don't need to account for that ourselves
   socket.on("input", (data: IOMessageInput) => {
@@ -66,6 +84,11 @@ io.on("connection", (socket: Socket) => {
       // TODO: Clamp delta to prevent cheating.
       playerActOnInput(context.gameState, player, input.delta, input.input);
     });
+  });
+
+  socket.on("playerJoin", (data: IOMessagePlayerJoin) => {
+    initNewPlayer(socket.id, data.name);
+    broadcastStateUpdate();
   });
 });
 

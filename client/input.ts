@@ -4,7 +4,8 @@ import { playerActOnInput } from "../game/entities/player";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {
-    e.preventDefault(); // no scrolling!!!
+    // had to comment this out because it broke the join form
+    // e.preventDefault(); // no scrolling!!!
     switch (e.code) {
       case "ArrowUp":
       case "KeyW":

@@ -89,7 +89,6 @@ const getRandomPlayerPos = () => {
   do {
     iterations++;
     newPlayerPos = {
-      // TODO: Don't spawn on walls, bullets, or pickups
       x:
         Math.floor(
           Math.random() *
@@ -113,13 +112,13 @@ const getRandomPlayerPos = () => {
   return newPlayerPos;
 };
 
-export const initNewPlayer = (id: string) => {
-  console.log("Initializing new player!", id);
+export const initNewPlayer = (id: string, name?: string) => {
+  console.log(`Initializing new player! name: ${name}, id: ${id}`);
 
   context.gameState.players[id] = {
     color: assignColor(),
     id: id,
-    name: uniqueNamesGenerator(uniqueNamesConfig),
+    name: name || uniqueNamesGenerator(uniqueNamesConfig),
     lastDamagedTimestamp: new Date().getTime(),
     dead: false,
     dash: {

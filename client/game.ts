@@ -17,6 +17,7 @@ import {
   createPlayerGhostsForPlayers,
 } from "./rendering/entities/player-ghost";
 import { pushGameStateBuffer } from "./rendering/interpolation";
+import { setupJoinGameForm } from "./join-game";
 
 const socket = io();
 
@@ -24,6 +25,7 @@ socket.on("connect", () => {
   if (socket.id) {
     context.id = socket.id;
     requestAnimationFrame(gameLoop);
+    setupJoinGameForm(socket);
   }
 });
 
@@ -34,6 +36,7 @@ socket.on("connect", () => {
  *   - combine these entities into a single entities property for easier copying when we add new entity types
  */
 const updateClientGameState = (newState: GameState) => {
+  context.gameState.map = newState.map;
   context.gameState.players = newState.players;
   context.gameState.bullets = newState.bullets;
   context.gameState.walls = newState.walls;
@@ -59,6 +62,8 @@ const gameLoop = () => {
 
   updateDelta();
   playerProcessInput();
+
+  // fps
   // context.debugInfo = Math.round(1 / context.delta);
 
   // Act on all entities.
