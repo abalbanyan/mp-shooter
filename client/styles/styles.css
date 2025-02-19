@@ -11,7 +11,14 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+html {
   background-color: var(--bg);
+  background-image: url("/water_bg_2.gif");
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
 }
 
 canvas {
