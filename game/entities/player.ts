@@ -5,6 +5,8 @@ import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { magnitude } from "../util/vector";
 import { hasPowerup } from "./powerup";
+import { context } from "../../client/context";
+import { playBulletHitOtherPlayer } from "../../client/sound";
 
 export const PLAYER_MAX_HEALTH = 4;
 const PLAYER_SPAWN_IMMUNITY = 2000;
@@ -34,6 +36,9 @@ export const damagePlayer = (player: PlayerEntity, damage: number) => {
   if (playerIsImmune(player)) {
     return;
   }
+
+  playBulletHitOtherPlayer();
+
   player.health -= damage;
   player.lastDamagedTimestamp = Date.now();
   if (player.health <= 0) {

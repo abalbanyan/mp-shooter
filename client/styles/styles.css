@@ -18,8 +18,30 @@ canvas {
   background: var(--bg);
   cursor: none;
   display: block;
-  /* width: 50vw;
-  height: 100vh; */
+}
+
+.canvas_container {
+  position: relative;
+}
+
+.mute_btn {
+  all: unset;
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  text-align: center;
+  position: absolute;
+  left: -32px;
+  top: 0;
+}
+
+.mute_btn:hover {
+  opacity: 0.6;
 }
 
 .controls {
@@ -69,7 +91,7 @@ input:hover {
   border-color: #d9386a;
 }
 
-button {
+.btn {
   background: #ffcc00;
   color: #333;
   font-size: 18px;
@@ -82,12 +104,12 @@ button {
   position: relative;
 }
 
-button:active {
+.btn:active {
   box-shadow: 0 2px 0 #cc8800;
   transform: translateY(2px);
 }
 
-button:hover,
-button:focus {
+.btn:hover,
+.btn:focus {
   background: #ffdb4d;
 }

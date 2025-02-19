@@ -16,6 +16,9 @@ import { cleanupPlayerGhosts } from "./rendering/entities/player-ghost";
 import { pushGameStateBuffer } from "./rendering/interpolation";
 import { setupModals } from "./modals";
 import { updateClientGameState } from "./reconciliation";
+import { setupSound } from "./sound";
+
+setupSound();
 
 const socket = io();
 

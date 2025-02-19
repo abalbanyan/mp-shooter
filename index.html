@@ -11,7 +11,24 @@
     <script type="module" src="/client/game.ts"></script>
   </head>
   <body>
-    <canvas id="gameCanvas"></canvas>
+    <div class="canvas_container">
+      <canvas id="gameCanvas"></canvas>
+      <button
+        id="muteBtn"
+        class="mute_btn"
+        aria-text="mute sound"
+        type="button"
+      >
+        <img alt="Toggle music" height="32" src="/mute.gif" />
+      </button>
+    </div>
+    <audio
+      onloadeddata="this.volume=0.5"
+      id="musicAudio"
+      src="/cave_rhythm.mp3"
+      autoplay
+      loop
+    ></audio>
 
     <form id="joinForm" class="game_modal">
       <div class="controls">
@@ -28,13 +45,15 @@
       </div>
 
       <input id="nameInput" type="text" class="name" />
-      <button type="submit">Join!</button>
+      <button class="btn" type="submit">Join!</button>
     </form>
 
     <div id="deathModal" class="game_modal">
       <img class="you_died" src="/you_died.gif" height="100" alt="YOU DIED" />
 
-      <button id="rejoinButton" type="button">Rejoin the fight!</button>
+      <button class="btn" id="rejoinButton" type="button">
+        Rejoin the fight!
+      </button>
     </div>
   </body>
 </html>
