@@ -7,6 +7,7 @@ import { magnitude } from "../util/vector";
 import { hasPowerup } from "./powerup";
 
 export const PLAYER_MAX_HEALTH = 4;
+const PLAYER_SPAWN_IMMUNITY = 2000;
 const PLAYER_IFRAME_DURATION_MS = 1000;
 const PLAYER_SPEED = 200;
 const PLAYER_SPEED_WITH_POWERUP = 350; // TODO: I feel like this is the wrong place for this
@@ -16,12 +17,23 @@ const DASH_SPEED = 600;
 export const COOLDOWN_BAR_WIDTH = 4;
 export const PLAYER_RADIUS = 10;
 
+/** Has player been attacked recently? */
 export const playerDamageOnCooldown = (player: PlayerEntity) =>
   onCooldown(player.lastDamagedTimestamp, PLAYER_IFRAME_DURATION_MS);
 export const dashOnCooldown = (player: PlayerEntity) =>
   player.dash.remainingDashCooldown > 0;
+export const playerJustSpawned = (player: PlayerEntity) =>
+  onCooldown(player.spawnTimestamp, PLAYER_SPAWN_IMMUNITY);
+
+export const playerIsImmune = (player: PlayerEntity) =>
+  playerDamageOnCooldown(player) ||
+  player.dash.isDashing ||
+  playerJustSpawned(player);
 
 export const damagePlayer = (player: PlayerEntity, damage: number) => {
+  if (playerIsImmune(player)) {
+    return;
+  }
   player.health -= damage;
   player.lastDamagedTimestamp = Date.now();
   if (player.health <= 0) {

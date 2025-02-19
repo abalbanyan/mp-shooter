@@ -7,6 +7,8 @@ import { drawPlayer } from "./rendering/entities/player";
 import { drawPickup } from "./rendering/entities/pickup";
 import { drawPlayerTrail } from "./rendering/entities/player-trails";
 import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
+import { onCooldown } from "../game/util/cooldown";
+import { playerDamageOnCooldown } from "../game/entities/player";
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -25,6 +27,16 @@ const drawTargetReticule = (
 };
 
 /**
+ * Must call ctx.save(); before this, and ctx.restore() before drawing background.
+ */
+const applyScreenShake = (ctx: CanvasRenderingContext2D) => {
+  const intensity = 2;
+  const shakeX = (Math.random() - 0.5) * intensity * 2;
+  const shakeY = (Math.random() - 0.5) * intensity * 2;
+  ctx.translate(shakeX, shakeY);
+};
+
+/**
  * TODO: Viewport + camera
  */
 export const renderGameState = (gameState: GameState) => {
@@ -34,6 +46,13 @@ export const renderGameState = (gameState: GameState) => {
   if (!ctx) return;
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  ctx.save();
+
+  const myPlayer = context.id && gameState.players[context.id];
+  if (myPlayer && onCooldown(myPlayer.lastDamagedTimestamp, 400)) {
+    applyScreenShake(ctx);
+  }
 
   gameState.bullets.forEach((bullet) => {
     const player = gameState.players[bullet.playerId];
@@ -59,6 +78,8 @@ export const renderGameState = (gameState: GameState) => {
   Object.values(gameState.players).forEach((player) => {
     drawPlayer(ctx, player);
   });
+
+  ctx.restore();
 
   // background
   ctx.fillStyle = COLORS.bg;

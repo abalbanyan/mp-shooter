@@ -4,7 +4,7 @@ import {
   DASH_COOLDOWN_MS,
   dashOnCooldown,
   PLAYER_RADIUS,
-  playerDamageOnCooldown,
+  playerIsImmune,
 } from "../../../game/entities/player";
 import { PlayerEntity, Vector } from "../../../game/types";
 import { getInterpolatedPlayerPosition } from "../interpolation";
@@ -122,9 +122,7 @@ export const drawPlayer = (
   drawPlayerBulletTrajectoryIndicator(ctx, player);
   drawPlayerDashCooldownBar(ctx, player);
 
-  const playerIsImmune =
-    playerDamageOnCooldown(player) || player.dash.isDashing;
-  if (playerIsImmune) {
+  if (playerIsImmune(player)) {
     drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
   } else {
     drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);

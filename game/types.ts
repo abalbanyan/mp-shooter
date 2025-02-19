@@ -26,6 +26,7 @@ export type Animation = {
 export type PlayerEntity = {
   id: string;
   name: string;
+  spawnTimestamp: number;
   pos: Vector;
   /** Normalized vector. */
   bulletTrajectory?: {

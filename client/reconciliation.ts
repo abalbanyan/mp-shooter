@@ -96,6 +96,8 @@ export const updateClientGameState = (
       clientPlayer.lastDamagedTimestamp,
       timestampDiff
     );
+    clientPlayer.spawnTimestamp =
+      applyTimestampCorrection(clientPlayer.spawnTimestamp, timestampDiff) || 0;
   });
 
   // Object.values(clientState.players).forEach((clientPlayer) => {

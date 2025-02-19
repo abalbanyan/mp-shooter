@@ -32,6 +32,7 @@ type ClientContext = {
 
   lastPing: number;
   RTT: number;
+  screenShake: boolean;
 
   debugInfo?: any;
 };
@@ -71,6 +72,7 @@ export const context: ClientContext = {
 
   playerTrails: [],
   playerGhosts: [],
+  screenShake: false,
 
   lastPing: 0,
   RTT: 0,
