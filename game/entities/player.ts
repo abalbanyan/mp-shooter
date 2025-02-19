@@ -107,7 +107,11 @@ export const playerActOnInput = (
     console.log("progress dash!");
     progressDash(player, delta);
   } else if (input.dash && !dashOnCooldown(player)) {
-    console.log("begin dash!");
+    console.log(
+      "begin dash!",
+      player.dash?.lastDashTimestamp || 0 - Date.now(),
+      Date.now()
+    );
     beginDash(player);
     progressDash(player, delta);
   } else {
