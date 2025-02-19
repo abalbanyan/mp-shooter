@@ -1,5 +1,6 @@
 import { GameState } from "../game/types";
 import { context } from "./context";
+import { showDeathModal } from "./modals";
 import { spawnPlayerGhost } from "./rendering/entities/player-ghost";
 
 const applyTimestampCorrection = (
@@ -63,20 +64,16 @@ export const updateClientGameState = (
   clientState.walls = structuredClone(serverState.walls);
   clientState.pickups = structuredClone(serverState.pickups);
 
-  // Find removed players, assume they've died, and remove them while spawning a ghost animation.
+  // Find removed players, assume they've died, and remove them while spawning a ghost animation. TODO: Some onPlayerDeath function
   Object.values(clientState.players).forEach((clientPlayer) => {
     if (!serverState.players[clientPlayer.id]) {
       spawnPlayerGhost(clientPlayer);
       delete clientState.players[clientPlayer.id];
+      if (clientPlayer.id === context.id) {
+        showDeathModal();
+      }
     }
   });
-
-  if (serverState.players[context.id]) {
-    console.log(
-      "Server says my remainingDashCooldown is:",
-      serverState.players[context.id].dash.remainingDashCooldown
-    );
-  }
 
   const myCooldowns = storeClientMyPlayerCooldowns(clientState, serverState);
 

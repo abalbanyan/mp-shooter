@@ -62,6 +62,11 @@ io.on("connection", (socket: Socket) => {
     broadcastStateUpdate();
   });
 
+  /** Allows client to measure RTT. */
+  socket.on("ping", () => {
+    socket.emit("pong");
+  });
+
   // Init new player.
   // TODO: This should happen later, once we allow the user to choose their own name.
   // initNewPlayer(socket.id);

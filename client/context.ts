@@ -30,6 +30,9 @@ type ClientContext = {
   playerTrails: PlayerTrailEntity[];
   playerGhosts: PlayerGhostEntity[];
 
+  lastPing: number;
+  RTT: number;
+
   debugInfo?: any;
 };
 
@@ -68,6 +71,9 @@ export const context: ClientContext = {
 
   playerTrails: [],
   playerGhosts: [],
+
+  lastPing: 0,
+  RTT: 0,
 };
 
 // context.debugInfo = context.mousePos;

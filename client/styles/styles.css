@@ -29,7 +29,7 @@ canvas {
   margin-bottom: 40px;
 }
 
-.join_form {
+.game_modal {
   display: none;
   background-color: #15181f;
   position: fixed;
@@ -44,8 +44,12 @@ canvas {
   align-items: center;
 }
 
-.join_form.active {
+.game_modal.active {
   display: flex;
+}
+
+.you_died {
+  margin-bottom: 60px;
 }
 
 input {

@@ -14,7 +14,7 @@ import { actOnEntities } from "../game/act-on-entities";
 import { createPlayerTrailsForPlayers } from "./rendering/entities/player-trails";
 import { cleanupPlayerGhosts } from "./rendering/entities/player-ghost";
 import { pushGameStateBuffer } from "./rendering/interpolation";
-import { setupJoinGameForm } from "./join-game";
+import { setupModals } from "./modals";
 import { updateClientGameState } from "./reconciliation";
 
 const socket = io();
@@ -23,8 +23,17 @@ socket.on("connect", () => {
   if (socket.id) {
     context.id = socket.id;
     requestAnimationFrame(gameLoop);
-    setupJoinGameForm(socket);
+    setupModals(socket);
+
+    setInterval(() => {
+      context.lastPing = performance.now();
+      socket.emit("ping");
+    }, 1000);
   }
+});
+
+socket.on("pong", () => {
+  context.RTT = Math.floor(performance.now() - context.lastPing);
 });
 
 /**

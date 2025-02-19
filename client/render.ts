@@ -65,9 +65,12 @@ export const renderGameState = (gameState: GameState) => {
   ctx.font = "12px Arial";
 
   // debug
-  if (context.debugInfo) {
+  if (localStorage.getItem("debug")) {
     ctx.fillStyle = "red";
-    ctx.fillText(JSON.stringify(context.debugInfo), 100, 80);
+    if (context.debugInfo) {
+      ctx.fillText(JSON.stringify(context.debugInfo), 40, 80);
+    }
+    ctx.fillText("RTT: " + context.RTT.toString(), 40, 120);
   }
 };
 

@@ -13,7 +13,7 @@
   <body>
     <canvas id="gameCanvas"></canvas>
 
-    <form id="joinForm" class="join_form">
+    <form id="joinForm" class="game_modal">
       <div class="controls">
         <img
           src="/wasd.png"
@@ -28,7 +28,13 @@
       </div>
 
       <input id="nameInput" type="text" class="name" />
-      <button tabindex="0" type="submit">Join!</button>
+      <button type="submit">Join!</button>
     </form>
+
+    <div id="deathModal" class="game_modal">
+      <img class="you_died" src="/you_died.gif" height="100" alt="YOU DIED" />
+
+      <button id="rejoinButton" type="button">Rejoin the fight!</button>
+    </div>
   </body>
 </html>
