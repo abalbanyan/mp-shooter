@@ -36,6 +36,8 @@ const setupMuteBtn = () => {
     return;
   }
 
+  muteBtn.classList.remove("hide");
+
   const isMuted = getMuteLS();
   audio.muted = isMuted;
   muteBtnImg.src = isMuted ? "/mute_on.gif" : "/mute.gif";

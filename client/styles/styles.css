@@ -40,6 +40,10 @@ canvas {
   top: 0;
 }
 
+.mute_btn.hide {
+  display: none;
+}
+
 .mute_btn:hover {
   opacity: 0.6;
 }
