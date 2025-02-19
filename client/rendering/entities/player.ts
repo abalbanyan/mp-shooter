@@ -16,20 +16,8 @@ const drawPlayerDashCooldownBar = (
   player: PlayerEntity
 ) => {
   if (!dashOnCooldown(player)) return;
-  if (!player.dash.lastDashTimestamp) return;
 
-  const now = Date.now();
-  if (localStorage.getItem("debug") && player.dash.lastDashTimestamp > now) {
-    console.error(
-      "lastDashTimestamp is greater than now",
-      now - player.dash.lastDashTimestamp
-    );
-  }
-
-  const timeRemaining = Math.max(
-    0,
-    player.dash.lastDashTimestamp + DASH_COOLDOWN_MS - now
-  );
+  const timeRemaining = Math.max(0, player.dash.remainingDashCooldown);
   const progressLeft = timeRemaining / DASH_COOLDOWN_MS;
 
   ctx.fillStyle = COLORS.cooldownBar;

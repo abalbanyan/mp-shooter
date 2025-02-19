@@ -21,12 +21,17 @@ export const initPlayerGhostEntity = (player: PlayerEntity) => ({
   spawnedAt: Date.now(),
 });
 
+export const spawnPlayerGhost = (player: PlayerEntity) => {
+  context.playerGhosts.push(initPlayerGhostEntity(player));
+};
+
 export const cleanupPlayerGhosts = () => {
   context.playerGhosts = context.playerGhosts.filter((ghost) =>
     onCooldown(ghost.spawnedAt, DEATH_ANIMATION_DURATION_MS)
   );
 };
 
+/** Unused now. */
 export const createPlayerGhostsForPlayers = (players: PlayerEntity[]) => {
   players.forEach((player) => {
     if (

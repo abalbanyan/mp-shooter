@@ -124,6 +124,7 @@ export const initNewPlayer = (id: string, name?: string) => {
     dash: {
       isDashing: false,
       dashDistanceElapsed: 0,
+      remainingDashCooldown: 0,
     },
     pos: getRandomPlayerPos(),
     health: PLAYER_MAX_HEALTH,

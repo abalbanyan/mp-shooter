@@ -12,12 +12,10 @@ import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 import { actOnEntities } from "../game/act-on-entities";
 import { createPlayerTrailsForPlayers } from "./rendering/entities/player-trails";
-import {
-  cleanupPlayerGhosts,
-  createPlayerGhostsForPlayers,
-} from "./rendering/entities/player-ghost";
+import { cleanupPlayerGhosts } from "./rendering/entities/player-ghost";
 import { pushGameStateBuffer } from "./rendering/interpolation";
 import { setupJoinGameForm } from "./join-game";
+import { updateClientGameState } from "./reconciliation";
 
 const socket = io();
 
@@ -30,38 +28,12 @@ socket.on("connect", () => {
 });
 
 /**
- * Update client gameState based on values returned from the server stateUpdate.
- * TODO:
- *   - don't overwrite player bulletTrajectory
- *   - combine these entities into a single entities property for easier copying when we add new entity types
- */
-const updateClientGameState = (newState: GameState) => {
-  context.gameState.map = newState.map;
-
-  // debugging
-  // const clientPos = Object.values(context.gameState.players)[0]?.pos;
-  // const serverPos = Object.values(newState.players)[0]?.pos;
-  // if (clientPos && serverPos) {
-  //   if (
-  //     Math.floor(clientPos.x) !== Math.floor(serverPos.x) ||
-  //     Math.floor(clientPos.y) !== Math.floor(serverPos.y)
-  //   ) {
-  //     console.log("RECONCILLIATION", { c: clientPos.x, s: serverPos.x });
-  //   }
-  // }
-  context.gameState.players = newState.players;
-  context.gameState.bullets = newState.bullets;
-  context.gameState.walls = newState.walls;
-  context.gameState.pickups = newState.pickups;
-};
-
-/**
  * Server reconciliation.
  */
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
   // console.log("server/client time discrepency:", Date.now() - data.timestamp); // This was quite high -- 1.8 seconds.
   pushGameStateBuffer(data.gameState, data.timestamp);
-  updateClientGameState(data.gameState);
+  updateClientGameState(data.gameState, data.timestamp);
   renderGameState(context.gameState);
 });
 
@@ -89,7 +61,7 @@ const gameLoop = () => {
   const players = Object.values(context.gameState.players);
 
   createPlayerTrailsForPlayers(players);
-  createPlayerGhostsForPlayers(players);
+  // createPlayerGhostsForPlayers(players);
   cleanupPlayerGhosts();
 
   renderGameState(context.gameState);

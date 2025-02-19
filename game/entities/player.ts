@@ -19,7 +19,7 @@ export const PLAYER_RADIUS = 10;
 export const playerDamageOnCooldown = (player: PlayerEntity) =>
   onCooldown(player.lastDamagedTimestamp, PLAYER_IFRAME_DURATION_MS);
 export const dashOnCooldown = (player: PlayerEntity) =>
-  onCooldown(player?.dash.lastDashTimestamp, DASH_COOLDOWN_MS);
+  player.dash.remainingDashCooldown > 0;
 
 export const damagePlayer = (player: PlayerEntity, damage: number) => {
   player.health -= damage;
@@ -31,6 +31,7 @@ export const damagePlayer = (player: PlayerEntity, damage: number) => {
 
 const endDash = (player: PlayerEntity) => {
   player.dash.isDashing = false;
+  player.dash.dashDistanceElapsed = 0;
 };
 
 const beginDash = (player: PlayerEntity) => {
@@ -44,13 +45,13 @@ const beginDash = (player: PlayerEntity) => {
     y: player.bulletTrajectory.y,
   };
   player.dash.isDashing = true;
-  player.dash.lastDashTimestamp = Date.now();
+  player.dash.remainingDashCooldown = DASH_COOLDOWN_MS;
   player.dash.dashDistanceElapsed = 0;
 };
 
 const progressDash = (player: PlayerEntity, delta: number) => {
   if (player.dash.dashDistanceElapsed >= DASH_DISTANCE) {
-    player.dash.isDashing = false;
+    endDash(player);
     return;
   }
   if (!player.dash.normalizedDashDirection) {
@@ -66,6 +67,16 @@ const progressDash = (player: PlayerEntity, delta: number) => {
 
   // Need to decrement the dash distance.
   player.dash.dashDistanceElapsed += magnitude(movement);
+};
+
+const updateDashCooldown = (player: PlayerEntity, delta: number) => {
+  if (!dashOnCooldown(player)) {
+    return;
+  }
+  player.dash.remainingDashCooldown = Math.max(
+    0,
+    player.dash.remainingDashCooldown - delta * 1000
+  );
 };
 
 const movePlayer = (
@@ -103,14 +114,12 @@ export const playerActOnInput = (
   delta: number,
   input: PlayerInput
 ) => {
+  updateDashCooldown(player, delta);
+
   if (player.dash.isDashing) {
     progressDash(player, delta);
-  } else if (input.dash && !player.dash.isDashing && !dashOnCooldown(player)) {
-    console.log(
-      "begin dash!",
-      player.dash?.lastDashTimestamp || 0 - Date.now(),
-      Date.now()
-    );
+  } else if (input.dash && !dashOnCooldown(player)) {
+    console.log("begin dash!");
     beginDash(player);
     progressDash(player, delta);
   } else {

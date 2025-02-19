@@ -39,7 +39,7 @@ export type PlayerEntity = {
     isDashing: boolean;
     dashDistanceElapsed: number;
     normalizedDashDirection?: Vector;
-    lastDashTimestamp?: number;
+    remainingDashCooldown: number;
   };
   lastBulletFiredTimestamp?: number;
   lastDamagedTimestamp?: number;
