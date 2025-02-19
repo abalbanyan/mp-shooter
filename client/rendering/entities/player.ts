@@ -33,9 +33,6 @@ const drawPlayerDashCooldownBar = (
   const progressLeft = timeRemaining / DASH_COOLDOWN_MS;
 
   ctx.fillStyle = COLORS.cooldownBar;
-  if (localStorage.getItem("debug")) {
-    console.log(player.dash.lastDashTimestamp, progressLeft, timeRemaining);
-  }
   ctx.fillRect(
     player.pos.x - PLAYER_RADIUS - 5,
     player.pos.y - PLAYER_RADIUS,

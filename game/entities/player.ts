@@ -106,7 +106,7 @@ export const playerActOnInput = (
   if (player.dash.isDashing) {
     console.log("progress dash!");
     progressDash(player, delta);
-  } else if (input.dash && !dashOnCooldown(player)) {
+  } else if (input.dash && !player.dash.isDashing && !dashOnCooldown(player)) {
     console.log(
       "begin dash!",
       player.dash?.lastDashTimestamp || 0 - Date.now(),
