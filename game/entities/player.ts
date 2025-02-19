@@ -104,7 +104,6 @@ export const playerActOnInput = (
   input: PlayerInput
 ) => {
   if (player.dash.isDashing) {
-    console.log("progress dash!");
     progressDash(player, delta);
   } else if (input.dash && !player.dash.isDashing && !dashOnCooldown(player)) {
     console.log(

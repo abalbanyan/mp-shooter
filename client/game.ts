@@ -59,7 +59,7 @@ const updateClientGameState = (newState: GameState) => {
  * Server reconciliation.
  */
 socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
-  console.log("server/client time discrepency:", Date.now() - data.timestamp);
+  // console.log("server/client time discrepency:", Date.now() - data.timestamp); // This was quite high -- 1.8 seconds.
   pushGameStateBuffer(data.gameState, data.timestamp);
   updateClientGameState(data.gameState);
   renderGameState(context.gameState);
