@@ -20,6 +20,13 @@ const drawPlayerDashCooldownBar = (
   if (!player.dash.lastDashTimestamp) return;
 
   const now = Date.now();
+  if (localStorage.getItem("debug") && player.dash.lastDashTimestamp > now) {
+    console.error(
+      "lastDashTimestamp is greater than now",
+      now - player.dash.lastDashTimestamp
+    );
+  }
+
   const timeRemaining = Math.max(
     0,
     player.dash.lastDashTimestamp + DASH_COOLDOWN_MS - now
