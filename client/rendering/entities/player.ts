@@ -13,8 +13,7 @@ import { drawHealth } from "./health";
 /** Maybe this needs to be another entity? */
 const drawPlayerDashCooldownBar = (
   ctx: CanvasRenderingContext2D,
-  player: PlayerEntity,
-  interpolatedPlayerPos: Vector
+  player: PlayerEntity
 ) => {
   if (!dashOnCooldown(player)) return;
   if (!player.dash.lastDashTimestamp) return;
@@ -38,8 +37,8 @@ const drawPlayerDashCooldownBar = (
     console.log(player.dash.lastDashTimestamp, progressLeft, timeRemaining);
   }
   ctx.fillRect(
-    interpolatedPlayerPos.x - PLAYER_RADIUS - 5,
-    interpolatedPlayerPos.y - PLAYER_RADIUS,
+    player.pos.x - PLAYER_RADIUS - 5,
+    player.pos.y - PLAYER_RADIUS,
     COOLDOWN_BAR_WIDTH,
     PLAYER_RADIUS * 2 * progressLeft
   );
@@ -47,8 +46,7 @@ const drawPlayerDashCooldownBar = (
 
 const drawPlayerBulletTrajectoryIndicator = (
   ctx: CanvasRenderingContext2D,
-  player: PlayerEntity,
-  interpolatedPlayerPos: Vector
+  player: PlayerEntity
 ) => {
   if (!player.bulletTrajectory) return;
 
@@ -60,12 +58,12 @@ const drawPlayerBulletTrajectoryIndicator = (
   ctx.beginPath();
   ctx.strokeStyle = player.color;
   ctx.moveTo(
-    interpolatedPlayerPos.x + player.bulletTrajectory.x * bulletTrajectoryStart,
-    interpolatedPlayerPos.y + player.bulletTrajectory.y * bulletTrajectoryStart
+    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryStart,
+    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryStart
   );
   ctx.lineTo(
-    interpolatedPlayerPos.x + player.bulletTrajectory.x * bulletTrajectoryEnd,
-    interpolatedPlayerPos.y + player.bulletTrajectory.y * bulletTrajectoryEnd
+    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryEnd,
+    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryEnd
   );
   ctx.stroke();
 };
@@ -128,53 +126,28 @@ export const drawPlayer = (
 ) => {
   if (player.dead) return;
 
-  const interpolatedPlayerPos = getInterpolatedPlayerPosition(player);
+  // const player.pos = getInterpolatedPlayerPosition(player);
 
   ctx.fillStyle = COLORS.text;
   ctx.textAlign = "center";
   ctx.textBaseline = "bottom";
-  // ctx.fillText(player.health.toString(), interpolatedPlayerPos.x, interpolatedPlayerPos.y + 26);
-  ctx.fillText(
-    player.name,
-    interpolatedPlayerPos.x,
-    interpolatedPlayerPos.y - 15
-  );
+  ctx.fillText(player.name, player.pos.x, player.pos.y - 15);
   drawHealth(ctx, player);
 
-  drawPlayerBulletTrajectoryIndicator(ctx, player, interpolatedPlayerPos);
-  drawPlayerDashCooldownBar(ctx, player, interpolatedPlayerPos);
+  drawPlayerBulletTrajectoryIndicator(ctx, player);
+  drawPlayerDashCooldownBar(ctx, player);
 
   const playerIsImmune =
     playerDamageOnCooldown(player) || player.dash.isDashing;
   if (playerIsImmune) {
-    drawBumpyCircle(
-      ctx,
-      10,
-      2,
-      12,
-      0.1,
-      interpolatedPlayerPos,
-      player.color,
-      1,
-      100
-    );
+    drawBumpyCircle(ctx, 10, 2, 12, 0.1, player.pos, player.color, 1, 100);
   } else {
-    drawBumpyCircle(
-      ctx,
-      10,
-      1,
-      10,
-      0.03,
-      interpolatedPlayerPos,
-      player.color,
-      3,
-      200
-    );
+    drawBumpyCircle(ctx, 10, 1, 10, 0.03, player.pos, player.color, 3, 200);
   }
 
   // center circle
   ctx.beginPath();
-  ctx.arc(interpolatedPlayerPos.x, interpolatedPlayerPos.y, 3, 0, Math.PI * 2);
+  ctx.arc(player.pos.x, player.pos.y, 3, 0, Math.PI * 2);
   ctx.fillStyle = player.color;
   ctx.fill();
 };
