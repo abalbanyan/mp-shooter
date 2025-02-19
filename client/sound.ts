@@ -7,6 +7,21 @@ import { getMuteLS, setMuteLS } from "./local-storage";
 
 let BULLET_HIT_AUDIO: HTMLAudioElement;
 
+/**
+ * Chrome only allows music to play after user interaction, so run this after the user clicks join game.
+ */
+export const startMusic = () => {
+  const audio = document.getElementById("musicAudio") as HTMLAudioElement;
+
+  if (!audio) {
+    console.error("missing audio element");
+    return;
+  }
+
+  audio.muted = getMuteLS();
+  audio.play();
+};
+
 const setupMuteBtn = () => {
   const muteBtn = document.getElementById("muteBtn") as HTMLDivElement;
   const muteBtnImg = muteBtn.querySelector("img") as HTMLImageElement;

@@ -1,6 +1,7 @@
 import { Socket } from "socket.io-client";
 
 import { GetSuggestedNameResponse, IOMessagePlayerJoin } from "../game/types";
+import { startMusic } from "./sound";
 
 const setupJoinGameForm = async (socket: Socket) => {
   const joinForm = document.getElementById("joinForm") as HTMLDivElement;
@@ -31,6 +32,8 @@ const setupJoinGameForm = async (socket: Socket) => {
     if (!name) return;
 
     socket.emit("playerJoin", { name } satisfies IOMessagePlayerJoin);
+
+    startMusic();
 
     joinForm.classList.remove("active");
   });
