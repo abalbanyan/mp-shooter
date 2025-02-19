@@ -10,7 +10,7 @@ export const getPlayerNameLS = () => {
 };
 
 export const getMuteLS = () => {
-  return localStorage.getItem(LS_KEY_MUTE) !== "0";
+  return localStorage.getItem(LS_KEY_MUTE) === "1";
 };
 export const setMuteLS = (mute: boolean) => {
   localStorage.setItem(LS_KEY_MUTE, mute ? "1" : "0");
