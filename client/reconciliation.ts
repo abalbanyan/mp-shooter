@@ -1,4 +1,3 @@
-import { actOnEntities } from "../game/act-on-entities";
 import { applyPlayerInput } from "../game/entities/player";
 import { GameState, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
@@ -14,30 +13,30 @@ const applyTimestampCorrection = (
 };
 
 /**
- * We don't want to use the server state for our cooldowns unless they're higher than expected, since that can lead to jankiness.
- * e.g., we might try to dash, but the server doesn't realize we have dashed yet, so it pushes a remainingDashCooldown of 0 to us,
- * causing us to dash multiple times in a few frames before eventually the server catches up and pushes an update fixing our final position.
+ * We don't need to use server state for cooldowns unless we introduce some pickup that resets the dash (maybe, even then might not be necessary).
+ * Using the server state for cooldowns can result in jankiness like this with dashing:
  *
- * also I wrote this at 5am and it's awful
+ * o
+ *   o
+ * o              <--- server pushes new state, and since our remainingCooldown is >0, replaying inputs causes dash to fail since it's on cooldown. however the player is dashing in the server's simulation.
+ * o
+ *          o     <--- server pushes new state, player rubberbands forward player has completed dash in the server-side simulation
+ *
+ * TODO: We might want to still use the server cooldown if it is significantly higher than the client cooldown.
  */
-const storeClientMyPlayerCooldowns = (
-  clientState: GameState,
-  serverState: GameState
-) => {
+const storeClientMyPlayerCooldowns = (clientState: GameState) => {
   const myCooldowns: Record<string, number | null> = {
     remainingDashCooldown: null,
   };
 
   if (!context.id) return myCooldowns;
 
-  const myPlayerServer = serverState.players[context.id];
   const myPlayerClient = clientState.players[context.id];
-  if (myPlayerServer && myPlayerClient) {
-    myCooldowns.remainingDashCooldown = Math.max(
-      myPlayerClient.dash.remainingDashCooldown,
-      myPlayerServer.dash.remainingDashCooldown
-    );
-  }
+
+  if (!myPlayerClient) return myCooldowns;
+
+  myCooldowns.remainingDashCooldown = myPlayerClient.dash.remainingDashCooldown;
+
   return myCooldowns;
 };
 
@@ -47,7 +46,6 @@ const storeClientMyPlayerCooldowns = (
  * since the server clock may not be in sync with the client.
  *
  * TODO:
- *   - don't overwrite player bulletTrajectory
  *   - combine these entities into a single entities property for easier copying when we add new entity types
  *   - clear buffered inputs when our player joins the game, otherwise there might be junk input in the buffer
  */
@@ -84,16 +82,9 @@ export const updateClientGameState = ({
     }
   });
 
-  const myCooldowns = storeClientMyPlayerCooldowns(clientState, serverState);
+  const myCooldowns = storeClientMyPlayerCooldowns(clientState);
 
   clientState.players = structuredClone(serverState.players);
-
-  if (clientState.players[context.id]) {
-    clientState.players[context.id].dash.remainingDashCooldown =
-      myCooldowns.remainingDashCooldown === null
-        ? clientState.players[context.id].dash.remainingDashCooldown
-        : myCooldowns.remainingDashCooldown;
-  }
 
   // Apply timestamp correction to all timestamps.
   Object.values(clientState.players).forEach((clientPlayer) => {
@@ -110,17 +101,17 @@ export const updateClientGameState = ({
       0;
   });
 
-  // Find all inputs since the last update and apply them. (note: input buffer is ordered).
   if (localStorage.getItem("debug_disable_replay")) {
     return;
   }
 
+  // Find all inputs since the last update and apply them. (note: input buffer is ordered).
   const myPlayer = context.gameState.players[context.id];
   const lastProcessedSequenceNumber =
     lastProcessedPlayerSequenceNumbers[context.id];
   if (myPlayer && lastProcessedSequenceNumber) {
     context.inputBufferForReplays.forEach(
-      ({ input, sequenceNumber, delta }, i) => {
+      ({ input, sequenceNumber, delta }) => {
         if (sequenceNumber > lastProcessedSequenceNumber) {
           applyPlayerInput(
             context.gameState,
@@ -134,15 +125,11 @@ export const updateClientGameState = ({
     );
   }
 
-  // debugging
-  // const clientPos = Object.values(context.gameState.players)[0]?.pos;
-  // const serverPos = Object.values(newState.players)[0]?.pos;
-  // if (clientPos && serverPos) {
-  //   if (
-  //     Math.floor(clientPos.x) !== Math.floor(serverPos.x) ||
-  //     Math.floor(clientPos.y) !== Math.floor(serverPos.y)
-  //   ) {
-  //     console.log("RECONCILLIATION", { c: clientPos.x, s: serverPos.x });
-  //   }
-  // }
+  if (
+    clientState.players[context.id] &&
+    myCooldowns.remainingDashCooldown !== null
+  ) {
+    clientState.players[context.id].dash.remainingDashCooldown =
+      myCooldowns.remainingDashCooldown;
+  }
 };
