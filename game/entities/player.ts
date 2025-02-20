@@ -6,6 +6,11 @@ import { onCooldown } from "../util/cooldown";
 import { magnitude } from "../util/vector";
 import { hasPowerup } from "./powerup";
 import { playBulletHitOtherPlayer } from "../../client/sound";
+import {
+  incPlayerDamageScore,
+  incPlayerDeathScore,
+  incPlayerKillScore,
+} from "../scores";
 
 export const PLAYER_MAX_HEALTH = 4;
 const PLAYER_SPAWN_IMMUNITY = 2000;
@@ -31,7 +36,12 @@ export const playerIsImmune = (player: PlayerEntity) =>
   player.dash.isDashing ||
   playerJustSpawned(player);
 
-export const damagePlayer = (player: PlayerEntity, damage: number) => {
+export const damagePlayer = (
+  gameState: GameState,
+  player: PlayerEntity,
+  damage: number,
+  attackerId?: string
+) => {
   if (playerIsImmune(player)) {
     return;
   }
@@ -42,6 +52,16 @@ export const damagePlayer = (player: PlayerEntity, damage: number) => {
   player.lastDamagedTimestamp = Date.now();
   if (player.health <= 0) {
     player.dead = true;
+  }
+
+  // Adjust scores if there was an attacker.
+  if (attackerId && gameState.players[attackerId]) {
+    const attacker = gameState.players[attackerId];
+    incPlayerDamageScore(gameState, attacker, damage);
+    if (player.dead) {
+      incPlayerKillScore(gameState, attacker);
+      incPlayerDeathScore(gameState, player);
+    }
   }
 };
 

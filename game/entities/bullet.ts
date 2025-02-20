@@ -209,7 +209,7 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
     if (isBulletIntersectingPlayerPos(player.pos, bullet)) {
       deleteBullet(bullet);
       cleanupDeletedBullets(gameState);
-      damagePlayer(player, BULLET_DAMAGE);
+      damagePlayer(gameState, player, BULLET_DAMAGE, bullet.playerId);
     }
   });
 };

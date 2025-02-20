@@ -15,6 +15,7 @@ import { initNewPlayer } from "./init-player";
 import { actOnEntities } from "../game/act-on-entities";
 import { getRandomName } from "./util/random-name";
 import { SERVER_TICK_RATE } from "../game/constants";
+import { resetScores, resetScoresForPlayer } from "../game/scores";
 
 const app = express();
 const httpServer = createServer(app);
@@ -31,6 +32,17 @@ app.get("/api/suggest-name", (req, res) => {
       name: getRandomName(),
     } satisfies GetSuggestedNameResponse)
   );
+});
+
+app.get("/api/reset-scores", (req, res) => {
+  if (req.query.name) {
+    console.log(`Resetting scores for ${req.query.name}`);
+    resetScoresForPlayer(context.gameState, req.query.name.toString());
+  } else {
+    console.log("Resetting all scores");
+    resetScores(context.gameState);
+  }
+  res.send(200);
 });
 
 /**

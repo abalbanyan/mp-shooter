@@ -74,6 +74,15 @@ export type GameState = {
   bullets: BulletEntity[];
   walls: WallEntity[];
   pickups: PickupEntity[];
+  /** All scores are name -> score mappings; players are intentionally allowed to re-use names. */
+  scores: Record<
+    string,
+    {
+      kills: number;
+      deaths: number;
+      damage: number;
+    }
+  >;
   map?: {
     h: number;
     w: number;

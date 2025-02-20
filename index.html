@@ -5,7 +5,12 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
 
     <link rel="stylesheet" href="/client/styles/styles.css" />
-
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fuzzy+Bubbles:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
     <script type="module" src="/client/game.ts"></script>
   </head>
   <body>
@@ -19,6 +24,21 @@
       >
         <img alt="Toggle music" height="32" src="/mute.gif" />
       </button>
+
+      <div class="scoreboard_wrap hide" id="scoreboard">
+        <section class="scoreboard deaths" id="scoreboardDeaths">
+          <h2>Deaths</h2>
+          <ul id="scoreboardDeathsList"></ul>
+        </section>
+        <section class="scoreboard kills" id="scoreboardKills">
+          <h2>Kills</h2>
+          <ul id="scoreboardKillsList"></ul>
+        </section>
+        <section class="scoreboard damage" id="scoreboardDamage">
+          <h2>Damage Dealt</h2>
+          <ul id="scoreboardDamageList"></ul>
+        </section>
+      </div>
     </div>
 
     <form id="joinForm" class="game_modal">

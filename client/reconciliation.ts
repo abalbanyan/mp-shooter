@@ -70,6 +70,7 @@ export const updateClientGameState = ({
   const correctedServerTimestamp = serverTimestamp + serverTimeOffset;
 
   const clientState = context.gameState;
+  clientState.scores = structuredClone(serverState.scores);
   clientState.map = structuredClone(serverState.map);
   clientState.bullets = structuredClone(serverState.bullets);
   clientState.walls = structuredClone(serverState.walls);

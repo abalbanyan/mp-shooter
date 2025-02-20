@@ -9,6 +9,11 @@ import { drawPlayerTrail } from "./rendering/entities/player-trails";
 import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
 import { onCooldown } from "../game/util/cooldown";
 import { playerDamageOnCooldown } from "../game/entities/player";
+import { renderScoreboard } from "./rendering/scores";
+
+const renderHTML = (gameState: GameState) => {
+  renderScoreboard(gameState);
+};
 
 const drawTargetReticule = (
   ctx: CanvasRenderingContext2D,
@@ -84,6 +89,8 @@ export const renderGameState = (gameState: GameState) => {
   // background
   ctx.fillStyle = COLORS.bg;
   ctx.font = "10px Arial";
+
+  renderHTML(gameState);
 
   // debug
   if (localStorage.getItem("debug")) {

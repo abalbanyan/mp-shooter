@@ -19,4 +19,5 @@ export const initialGameState: GameState = {
     h: 800,
     w: 800,
   },
+  scores: {},
 };
