@@ -49,28 +49,31 @@ socket.on("stateUpdate", (data: IOMessageStateUpdate) => {
 setupInput();
 
 const gameLoop = () => {
-  // If no assigned id, don't take any actions yet.
+  // If we haven't joined the game, take no action.
   if (!context.id) {
     return;
   }
+  const player = context.gameState.players[context.id];
 
   // Order is important
   updateDelta();
   playerProcessInput();
-  context.sequenceNumber++;
-  pushInputToBuffer();
+
+  if (player && !player.dead) {
+    context.sequenceNumber++;
+    pushInputToBuffer();
+
+    // Act on all entities.
+    actOnEntities(context.gameState, context.delta);
+
+    const players = Object.values(context.gameState.players);
+
+    createPlayerTrailsForPlayers(players);
+    cleanupPlayerGhosts();
+  }
 
   // fps
   // context.debugInfo = Math.round(1 / context.delta);
-
-  // Act on all entities.
-  actOnEntities(context.gameState, context.delta);
-
-  const players = Object.values(context.gameState.players);
-
-  createPlayerTrailsForPlayers(players);
-  // createPlayerGhostsForPlayers(players);
-  cleanupPlayerGhosts();
 
   renderGameState(context.gameState);
   requestAnimationFrame(gameLoop);
@@ -80,11 +83,10 @@ const gameLoop = () => {
  * Send the current input state to the server periodically.
  */
 const sendInput = () => {
-  // If no assigned id, don't take any actions yet.
+  // If we haven't joined the game, take no action.
   if (!context.id) {
     return;
   }
-
   const player = context.gameState.players[context.id];
   if (!player || player.dead) {
     return;

@@ -49,10 +49,7 @@ const storeClientMyPlayerCooldowns = (
  * TODO:
  *   - don't overwrite player bulletTrajectory
  *   - combine these entities into a single entities property for easier copying when we add new entity types
- *   - RTT is needed to make the timestamp correction more accurate
- *   - Store the last x inputs, and when server sends correction, instead of simply overwriting state, we can
- *     use some new inputId to find the last processed input, and replay inputs since then. this will avoid
- *     the annoying rubberbanding when the player has some server latency
+ *   - clear buffered inputs when our player joins the game, otherwise there might be junk input in the buffer
  */
 export const updateClientGameState = ({
   gameState: serverState,
