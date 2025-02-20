@@ -6,8 +6,7 @@ import {
   PLAYER_RADIUS,
   playerIsImmune,
 } from "../../../game/entities/player";
-import { PlayerEntity, Vector } from "../../../game/types";
-import { getInterpolatedPlayerPosition } from "../interpolation";
+import { PlayerEntity } from "../../../game/types";
 import { drawHealth } from "./health";
 
 /** Maybe this needs to be another entity? */
@@ -110,8 +109,6 @@ export const drawPlayer = (
   player: PlayerEntity
 ) => {
   if (player.dead) return;
-
-  // const player.pos = getInterpolatedPlayerPosition(player);
 
   ctx.fillStyle = COLORS.text;
   ctx.textAlign = "center";

@@ -5,6 +5,9 @@ const INTERPOLATION_BUFFER_SIZE = 2;
 const INTERPOLATION_DELAY_MS = 100;
 
 /**
+ * NOTE: This is UNUSED. After playing around with this, I don't think interpolation
+ * is actually necessary now that I've added input replaying and simply introduces input lag, at least the way I've implemented it.
+ *
  * Returns the interpolated position of the player based on the previous server updates, used for rendering only.
  * We additionally apply an INTERPOLATION_DELAY to avoid immediately shifting the player after server reconcilliation.
  *
