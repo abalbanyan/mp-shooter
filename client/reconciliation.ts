@@ -1,6 +1,6 @@
 import { applyPlayerInput } from "../game/entities/player";
 import { GameState, IOMessageStateUpdate } from "../game/types";
-import { context } from "./context";
+import { clearInputBuffer, context } from "./context";
 import { showDeathModal } from "./modals";
 import { spawnPlayerGhost } from "./rendering/entities/player-ghost";
 
@@ -47,7 +47,6 @@ const storeClientMyPlayerCooldowns = (clientState: GameState) => {
  *
  * TODO:
  *   - combine these entities into a single entities property for easier copying when we add new entity types
- *   - clear buffered inputs when our player joins the game, otherwise there might be junk input in the buffer
  */
 export const updateClientGameState = ({
   gameState: serverState,
@@ -83,6 +82,11 @@ export const updateClientGameState = ({
   });
 
   const myCooldowns = storeClientMyPlayerCooldowns(clientState);
+
+  // Our player is joining the game. Clear the buffers to avoid junk input being sent to the server.
+  if (!clientState.players[context.id] && serverState.players[context.id]) {
+    clearInputBuffer();
+  }
 
   clientState.players = structuredClone(serverState.players);
 

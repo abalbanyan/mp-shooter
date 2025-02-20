@@ -113,3 +113,8 @@ export const pushInputToBuffer = () => {
     context.inputBufferForReplays.shift();
   }
 };
+
+export const clearInputBuffer = () => {
+  context.inputBufferForReplays = [];
+  context.inputBufferForServer = [];
+};
