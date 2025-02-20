@@ -7,9 +7,12 @@ type ScoreToDisplay = { name: string; score: number };
  */
 const updateList = (listEl: HTMLElement, scores: ScoreToDisplay[]) => {
   const listItems = listEl.children;
-  const nonzeroScores = scores.filter(({ score }) => score > 0);
+  const filteredScores = scores
+    .filter(({ score }) => score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 10);
 
-  nonzeroScores.forEach(({ name, score }, i) => {
+  filteredScores.forEach(({ name, score }, i) => {
     if (listItems[i]) {
       const nameSpan = listItems[i].querySelector(".name") as HTMLSpanElement;
       const scoreSpan = listItems[i].querySelector(".score") as HTMLSpanElement;
@@ -33,7 +36,7 @@ const updateList = (listEl: HTMLElement, scores: ScoreToDisplay[]) => {
     }
   });
 
-  while (listEl.children.length > nonzeroScores.length) {
+  while (listEl.children.length > filteredScores.length) {
     listEl.removeChild(listEl.lastChild!);
   }
 };
