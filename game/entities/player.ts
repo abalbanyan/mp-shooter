@@ -5,7 +5,6 @@ import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { magnitude } from "../util/vector";
 import { hasPowerup } from "./powerup";
-import { context } from "../../client/context";
 import { playBulletHitOtherPlayer } from "../../client/sound";
 
 export const PLAYER_MAX_HEALTH = 4;
@@ -55,7 +54,6 @@ const beginDash = (player: PlayerEntity) => {
   if (!player.bulletTrajectory) {
     return;
   }
-  console.debug("dash!");
 
   player.dash.normalizedDashDirection = {
     x: player.bulletTrajectory.x,
@@ -129,21 +127,24 @@ export const applyPlayerInput = (
   gameState: GameState,
   player: PlayerEntity,
   delta: number,
-  input: PlayerInput
+  input: PlayerInput,
+  /** Are we replaying inputs from the server? */
+  isReplay = false
 ) => {
+  player.bulletTrajectory = structuredClone(input.bulletTrajectory);
+
   updateDashCooldown(player, delta);
 
   if (player.dash.isDashing) {
     progressDash(player, delta);
   } else if (input.dash && !dashOnCooldown(player)) {
-    console.log("begin dash!");
     beginDash(player);
     progressDash(player, delta);
   } else {
     movePlayer(player, input, delta);
   }
 
-  if (input.attack) {
+  if (input.attack && !isReplay) {
     initBulletOnCooldown(gameState, player);
   }
 

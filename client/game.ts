@@ -1,13 +1,9 @@
 import { io } from "socket.io-client";
 
-import type {
-  GameState,
-  IOMessageInput,
-  SocketEventGameStateUpdate,
-} from "../game/types";
+import type { IOMessageInput, IOMessageStateUpdate } from "../game/types";
 
 import { setupInput } from "./input";
-import { context, updateDelta } from "./context";
+import { context, pushInputToBuffer, updateDelta } from "./context";
 import { playerProcessInput } from "./input";
 import { renderGameState } from "./render";
 import { actOnEntities } from "../game/act-on-entities";
@@ -17,6 +13,7 @@ import { pushGameStateBuffer } from "./rendering/interpolation";
 import { setupModals } from "./modals";
 import { updateClientGameState } from "./reconciliation";
 import { setupSound } from "./sound";
+import { CLIENT_TICK_RATE } from "../game/constants";
 
 setupSound();
 
@@ -31,7 +28,7 @@ socket.on("connect", () => {
     setInterval(() => {
       context.lastPing = performance.now();
       socket.emit("ping");
-    }, 200);
+    }, 500);
   }
 });
 
@@ -42,10 +39,10 @@ socket.on("pong", () => {
 /**
  * Server reconciliation.
  */
-socket.on("stateUpdate", (data: SocketEventGameStateUpdate) => {
+socket.on("stateUpdate", (data: IOMessageStateUpdate) => {
   // console.log("server/client time discrepency:", Date.now() - data.timestamp); // This was quite high -- 1.8 seconds.
   pushGameStateBuffer(data.gameState, data.timestamp);
-  updateClientGameState(data.gameState, data.timestamp);
+  updateClientGameState(data);
   renderGameState(context.gameState);
 });
 
@@ -57,13 +54,11 @@ const gameLoop = () => {
     return;
   }
 
+  // Order is important
   updateDelta();
   playerProcessInput();
-  context.inputBuffer.push({
-    timestamp: Date.now(),
-    delta: context.delta,
-    input: structuredClone(context.keys),
-  });
+  context.sequenceNumber++;
+  pushInputToBuffer();
 
   // fps
   // context.debugInfo = Math.round(1 / context.delta);
@@ -96,13 +91,11 @@ const sendInput = () => {
   }
 
   // Send all buffered actions to the server.
-  if (context.inputBuffer.length > 0) {
+  if (context.inputBufferForServer.length > 0) {
     socket.emit("input", {
-      inputs: context.inputBuffer,
-      bulletTrajectory: player.bulletTrajectory,
+      inputMessages: structuredClone(context.inputBufferForServer),
     } satisfies IOMessageInput);
-
-    context.inputBuffer = [];
+    context.inputBufferForServer = [];
   }
 };
-setInterval(sendInput, 15);
+setInterval(sendInput, CLIENT_TICK_RATE);

@@ -9,25 +9,25 @@ export const setupInput = () => {
     switch (e.code) {
       case "ArrowUp":
       case "KeyW":
-        context.keys.up = true;
+        context.input.up = true;
         break;
       case "ArrowDown":
       case "KeyS":
-        context.keys.down = true;
+        context.input.down = true;
         break;
       case "ArrowLeft":
       case "KeyA":
-        context.keys.left = true;
+        context.input.left = true;
         break;
       case "ArrowRight":
       case "KeyD":
-        context.keys.right = true;
+        context.input.right = true;
         break;
       case "Space":
-        context.keys.attack = true;
+        context.input.attack = true;
         break;
       case "ShiftLeft":
-        context.keys.dash = true;
+        context.input.dash = true;
         break;
     }
   });
@@ -36,25 +36,25 @@ export const setupInput = () => {
     switch (e.code) {
       case "ArrowUp":
       case "KeyW":
-        context.keys.up = false;
+        context.input.up = false;
         break;
       case "ArrowDown":
       case "KeyS":
-        context.keys.down = false;
+        context.input.down = false;
         break;
       case "ArrowLeft":
       case "KeyA":
-        context.keys.left = false;
+        context.input.left = false;
         break;
       case "ArrowRight":
       case "KeyD":
-        context.keys.right = false;
+        context.input.right = false;
         break;
       case "Space":
-        context.keys.attack = false;
+        context.input.attack = false;
         break;
       case "ShiftLeft":
-        context.keys.dash = false;
+        context.input.dash = false;
         break;
     }
   });
@@ -62,10 +62,10 @@ export const setupInput = () => {
   document.addEventListener("mousedown", (event) => {
     switch (event.button) {
       case 0:
-        context.keys.attack = true;
+        context.input.attack = true;
         break;
       case 2:
-        context.keys.dash = true;
+        context.input.dash = true;
         break;
     }
   });
@@ -73,10 +73,10 @@ export const setupInput = () => {
   document.addEventListener("mouseup", (event) => {
     switch (event.button) {
       case 0:
-        context.keys.attack = false;
+        context.input.attack = false;
         break;
       case 2:
-        context.keys.dash = false;
+        context.input.dash = false;
         break;
     }
   });
@@ -88,9 +88,7 @@ export const setupInput = () => {
   });
 
   // Disable right click menu
-  context.canvas.addEventListener("contextmenu", (event) =>
-    event.preventDefault()
-  );
+  document.addEventListener("contextmenu", (event) => event.preventDefault());
 };
 
 /**
@@ -126,14 +124,18 @@ export const playerProcessInput = () => {
     return;
   }
 
-  const { id, keys, gameState, delta, mousePos } = context;
+  const { id, input: keys, gameState, delta, mousePos } = context;
 
-  const player = gameState.players[id];
-  if (!player) {
+  const myPlayer = gameState.players[id];
+  if (!myPlayer) {
     return;
   }
 
-  player.bulletTrajectory = calculateBulletTrajectory(player, mousePos);
+  context.input.bulletTrajectory = calculateBulletTrajectory(
+    myPlayer,
+    mousePos
+  );
+  myPlayer.bulletTrajectory = context.input.bulletTrajectory;
 
-  applyPlayerInput(gameState, player, delta, keys);
+  applyPlayerInput(gameState, myPlayer, delta, keys);
 };

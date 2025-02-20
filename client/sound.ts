@@ -59,7 +59,6 @@ export const playBulletHitOtherPlayer = () => {
   if (!BULLET_HIT_AUDIO) return;
   if (!BULLET_HIT_AUDIO.paused) return;
   if (getMuteLS()) return;
-  console.log("play");
 
   BULLET_HIT_AUDIO.play();
 };

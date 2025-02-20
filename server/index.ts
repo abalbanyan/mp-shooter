@@ -14,6 +14,7 @@ import { applyPlayerInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
 import { actOnEntities } from "../game/act-on-entities";
 import { getRandomName } from "./util/random-name";
+import { SERVER_TICK_RATE } from "../game/constants";
 
 const app = express();
 const httpServer = createServer(app);
@@ -47,8 +48,11 @@ app.get("*", (req, res) => {
 
 const broadcastStateUpdate = () => {
   io.emit("stateUpdate", {
-    gameState: context.gameState,
+    gameState: structuredClone(context.gameState),
     timestamp: Date.now(),
+    lastProcessedPlayerSequenceNumbers: structuredClone(
+      context.lastProcessedPlayerSequenceNumbers
+    ),
   } satisfies IOMessageStateUpdate);
 };
 
@@ -57,20 +61,17 @@ io.on("connection", (socket: Socket) => {
 
   socket.on("disconnect", () => {
     console.log("User disconnected:", socket.id);
+    // todo: cleanupPlayer func?
     delete context.gameState.players[socket.id];
+    delete context.lastProcessedPlayerSequenceNumbers[socket.id];
 
     broadcastStateUpdate();
   });
 
-  /** Allows client to measure RTT. */
+  // Allows client to measure RTT.
   socket.on("ping", () => {
     socket.emit("pong");
   });
-
-  // Init new player.
-  // TODO: This should happen later, once we allow the user to choose their own name.
-  // initNewPlayer(socket.id);
-  // broadcastStateUpdate();
 
   // Note: socket.io guarantees message order, so we don't need to account for that ourselves
   socket.on("input", (data: IOMessageInput) => {
@@ -80,12 +81,21 @@ io.on("connection", (socket: Socket) => {
       return;
     }
 
-    player.bulletTrajectory = data.bulletTrajectory;
-
     // Act on all the inputs in the buffer sent by the client.
-    data.inputs.forEach((input) => {
+    // NOTE: We don't act on entities here, so if a player moves
+    // in and out of a collision point (e.g. a bullet or a pickup)
+    // in the space of a complete server tick, then the collision won't register.
+    // I think this is considered acceptable for online games.
+    data.inputMessages.forEach((inputMessage) => {
       // TODO: Clamp delta to prevent cheating.
-      applyPlayerInput(context.gameState, player, input.delta, input.input);
+      applyPlayerInput(
+        context.gameState,
+        player,
+        inputMessage.delta,
+        structuredClone(inputMessage.input)
+      );
+      context.lastProcessedPlayerSequenceNumbers[player.id] =
+        inputMessage.sequenceNumber;
     });
   });
 
@@ -116,7 +126,7 @@ setInterval(() => {
   });
 
   broadcastStateUpdate();
-}, 15);
+}, SERVER_TICK_RATE);
 
 io.httpServer.listen(port, () => {
   console.log(`Server listening on port ${port}`);

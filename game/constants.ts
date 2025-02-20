@@ -19,3 +19,6 @@ export const COLORS = {
 export const MAP_HEIGHT = 800;
 export const MAP_WIDTH = 800;
 export const BOUNDING_WALL_SIZE = 30;
+
+export const SERVER_TICK_RATE = 15; //750;
+export const CLIENT_TICK_RATE = 15; //500;

@@ -136,4 +136,5 @@ export const initNewPlayer = (id: string, name?: string) => {
       Spread: { timestamp: undefined },
     },
   };
+  context.lastProcessedPlayerSequenceNumbers[id] = 0;
 };

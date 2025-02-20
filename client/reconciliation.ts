@@ -1,4 +1,6 @@
-import { GameState } from "../game/types";
+import { actOnEntities } from "../game/act-on-entities";
+import { applyPlayerInput } from "../game/entities/player";
+import { GameState, IOMessageStateUpdate } from "../game/types";
 import { context } from "./context";
 import { showDeathModal } from "./modals";
 import { spawnPlayerGhost } from "./rendering/entities/player-ghost";
@@ -15,6 +17,8 @@ const applyTimestampCorrection = (
  * We don't want to use the server state for our cooldowns unless they're higher than expected, since that can lead to jankiness.
  * e.g., we might try to dash, but the server doesn't realize we have dashed yet, so it pushes a remainingDashCooldown of 0 to us,
  * causing us to dash multiple times in a few frames before eventually the server catches up and pushes an update fixing our final position.
+ *
+ * also I wrote this at 5am and it's awful
  */
 const storeClientMyPlayerCooldowns = (
   clientState: GameState,
@@ -50,13 +54,20 @@ const storeClientMyPlayerCooldowns = (
  *     use some new inputId to find the last processed input, and replay inputs since then. this will avoid
  *     the annoying rubberbanding when the player has some server latency
  */
-export const updateClientGameState = (
-  serverState: GameState,
-  serverTimestamp: number
-) => {
+export const updateClientGameState = ({
+  gameState: serverState,
+  timestamp: serverTimestamp,
+  lastProcessedPlayerSequenceNumbers,
+}: IOMessageStateUpdate) => {
   if (!context.id) return;
 
-  const timestampDiff = serverTimestamp - Date.now();
+  if (localStorage.getItem("debug_reconciliation")) {
+    console.log("server update");
+  }
+
+  // estimating server delay using RTT
+  const serverTimeOffset = Date.now() - context.RTT / 2 - serverTimestamp;
+  const correctedServerTimestamp = serverTimestamp + serverTimeOffset;
 
   const clientState = context.gameState;
   clientState.map = structuredClone(serverState.map);
@@ -90,49 +101,40 @@ export const updateClientGameState = (
   Object.values(clientState.players).forEach((clientPlayer) => {
     clientPlayer.lastBulletFiredTimestamp = applyTimestampCorrection(
       clientPlayer.lastBulletFiredTimestamp,
-      timestampDiff
+      serverTimeOffset
     );
     clientPlayer.lastDamagedTimestamp = applyTimestampCorrection(
       clientPlayer.lastDamagedTimestamp,
-      timestampDiff
+      serverTimeOffset
     );
     clientPlayer.spawnTimestamp =
-      applyTimestampCorrection(clientPlayer.spawnTimestamp, timestampDiff) || 0;
+      applyTimestampCorrection(clientPlayer.spawnTimestamp, serverTimeOffset) ||
+      0;
   });
 
-  // Object.values(clientState.players).forEach((clientPlayer) => {
-  //   if (!serverState.players[clientPlayer.id]) {
-  //     // This player has died, remove them and spawn a ghost animation.
-  //     spawnPlayerGhost(clientPlayer);
-  //     delete clientState.players[clientPlayer.id];
-  //   } else if (clientPlayer.id !== context.id) {
-  //     clientState.players[clientPlayer.id] = structuredClone(
-  //       serverState.players[clientPlayer.id]
-  //     );
-  //   } else {
-  //     // This is my player.
-  //     // All timestamps are intentionally omitted since we can't use server timestamps on the client.
-  //     const serverPlayer = serverState.players[clientPlayer.id];
-  //     const myPlayer = clientState.players[clientPlayer.id];
-  //     myPlayer.name = serverPlayer.name;
-  //     myPlayer.pos = serverPlayer.pos;
-  //     myPlayer.health = serverPlayer.health;
-  //     myPlayer.color = serverPlayer.color;
-  //     myPlayer.dead = serverPlayer.dead;
-  //     myPlayer.dash.dashDistanceElapsed = serverPlayer.dash.dashDistanceElapsed;
-  //     myPlayer.dash.isDashing = serverPlayer.dash.isDashing;
-  //     myPlayer.dash.normalizedDashDirection =
-  //       serverPlayer.dash.normalizedDashDirection;
-  //     myPlayer.powerups = serverPlayer.powerups;
-  //   }
-  // });
+  // Find all inputs since the last update and apply them. (note: input buffer is ordered).
+  if (localStorage.getItem("debug_disable_replay")) {
+    return;
+  }
 
-  // Object.values(serverState.players).forEach((serverPlayer) => {
-  //   if (!clientState.players[serverPlayer.id]) {
-  //     // New player (which could be me).
-  //     clientState.players[serverPlayer.id] = structuredClone(serverPlayer);
-  //   }
-  // });
+  const myPlayer = context.gameState.players[context.id];
+  const lastProcessedSequenceNumber =
+    lastProcessedPlayerSequenceNumbers[context.id];
+  if (myPlayer && lastProcessedSequenceNumber) {
+    context.inputBufferForReplays.forEach(
+      ({ input, sequenceNumber, delta }, i) => {
+        if (sequenceNumber > lastProcessedSequenceNumber) {
+          applyPlayerInput(
+            context.gameState,
+            myPlayer,
+            delta,
+            structuredClone(input),
+            true
+          );
+        }
+      }
+    );
+  }
 
   // debugging
   // const clientPos = Object.values(context.gameState.players)[0]?.pos;

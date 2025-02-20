@@ -10,8 +10,13 @@ type ClientContext = {
   lastTime: number;
   delta: number;
   id: null | string;
-  keys: PlayerInput;
-  inputBuffer: IOMessageInput["inputs"];
+  input: PlayerInput;
+  /** Input buffer for replaying inputs during reconciliation. */
+  inputBufferForReplays: IOMessageInput["inputMessages"];
+  /** Input buffer for sending inputs to the server.
+   * (TODO: clever way to share with inputBufferForReplays. We need two states because they get cleared at different times.) */
+  inputBufferForServer: IOMessageInput["inputMessages"];
+  sequenceNumber: number;
 
   joinedGame: boolean;
 
@@ -39,12 +44,15 @@ type ClientContext = {
 
 export const context: ClientContext = {
   canvas: document.getElementById("gameCanvas") as HTMLCanvasElement,
+  id: null,
 
   lastTime: performance.now(),
   delta: 0,
 
-  inputBuffer: [],
-  id: null,
+  inputBufferForReplays: [],
+  inputBufferForServer: [],
+  sequenceNumber: 1,
+
   joinedGame: false,
 
   gameState: {
@@ -56,13 +64,14 @@ export const context: ClientContext = {
 
   gameStateBuffer: [],
 
-  keys: {
+  input: {
     up: false,
     down: false,
     left: false,
     right: false,
     attack: false,
     dash: false,
+    bulletTrajectory: undefined,
   },
 
   mousePos: {
@@ -84,4 +93,22 @@ export const updateDelta = () => {
   const now = performance.now();
   context.delta = (now - context.lastTime) / 1000;
   context.lastTime = now;
+};
+
+export const pushInputToBuffer = () => {
+  context.inputBufferForServer.push({
+    timestamp: Date.now(),
+    sequenceNumber: context.sequenceNumber,
+    delta: context.delta,
+    input: structuredClone(context.input),
+  });
+  context.inputBufferForReplays.push({
+    timestamp: Date.now(),
+    sequenceNumber: context.sequenceNumber,
+    delta: context.delta,
+    input: structuredClone(context.input),
+  });
+  if (context.inputBufferForReplays.length > 200) {
+    context.inputBufferForReplays.shift();
+  }
 };

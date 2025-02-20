@@ -80,17 +80,14 @@ export type GameState = {
   };
 };
 
-export type SocketEventGameStateUpdate = {
-  timestamp: number;
-  gameState: GameState;
-};
-
 export enum Direction {
   Up,
   Down,
   Left,
   Right,
 }
+
+export type PlayerInputSequenceNumbers = Record<string, number>;
 
 export type PlayerInput = {
   up: boolean;
@@ -99,6 +96,8 @@ export type PlayerInput = {
   right: boolean;
   attack: boolean;
   dash: boolean;
+  /** normalized vector */
+  bulletTrajectory?: Vector;
 };
 
 /**
@@ -110,16 +109,25 @@ export type IOMessageStateUpdate = {
    */
   gameState: GameState;
   timestamp: number;
+  /**
+   * Mapping of each playerId to an input sequence number.
+   * This is used to accurately replay inputs on the client when a server update is received.
+   * The sequence numbers are incremented on the client every time an input is made and passed along
+   * to the server. The server then echoes back the last processed sequence number when broadcasting updates.
+   * Note that this is UNTRUSTED since sequence numbers come from the client.
+   */
+  lastProcessedPlayerSequenceNumbers: PlayerInputSequenceNumbers;
 };
 
 /**
  * Message sent by clients to server to notify of input.
  */
 export type IOMessageInput = {
-  inputs: {
+  inputMessages: {
     input: PlayerInput;
     /** client timestamp */
     timestamp: number;
+    sequenceNumber: number;
     /**
      * I think it might be insecure to send delta, but I don't know of a better way to handle this.
      * Perhaps we can clamp the delta on the server to prevent cheating?
@@ -128,7 +136,6 @@ export type IOMessageInput = {
      */
     delta: number;
   }[];
-  bulletTrajectory: PlayerEntity["bulletTrajectory"];
 };
 
 /**

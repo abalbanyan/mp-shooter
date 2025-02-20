@@ -20,14 +20,6 @@
         <img alt="Toggle music" height="32" src="/mute.gif" />
       </button>
     </div>
-    <audio
-      muted
-      onloadeddata="this.volume=0.5"
-      id="musicAudio"
-      src="/cave_rhythm.mp3"
-      autoplay
-      loop
-    ></audio>
 
     <form id="joinForm" class="game_modal">
       <div class="controls">
@@ -50,5 +42,14 @@
         Rejoin the fight!
       </button>
     </div>
+
+    <audio
+      preload="none"
+      muted
+      onloadeddata="this.volume=0.5"
+      id="musicAudio"
+      src="/cave_rhythm.mp3"
+      loop
+    ></audio>
   </body>
 </html>
