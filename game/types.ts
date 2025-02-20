@@ -118,6 +118,8 @@ export type IOMessageStateUpdate = {
 export type IOMessageInput = {
   inputs: {
     input: PlayerInput;
+    /** client timestamp */
+    timestamp: number;
     /**
      * I think it might be insecure to send delta, but I don't know of a better way to handle this.
      * Perhaps we can clamp the delta on the server to prevent cheating?

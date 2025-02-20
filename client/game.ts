@@ -31,7 +31,7 @@ socket.on("connect", () => {
     setInterval(() => {
       context.lastPing = performance.now();
       socket.emit("ping");
-    }, 1000);
+    }, 200);
   }
 });
 
@@ -60,6 +60,7 @@ const gameLoop = () => {
   updateDelta();
   playerProcessInput();
   context.inputBuffer.push({
+    timestamp: Date.now(),
     delta: context.delta,
     input: structuredClone(context.keys),
   });

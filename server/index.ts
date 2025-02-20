@@ -10,7 +10,7 @@ import type {
   IOMessageStateUpdate,
 } from "../game/types";
 import { context } from "./context";
-import { playerActOnInput } from "../game/entities/player";
+import { applyPlayerInput } from "../game/entities/player";
 import { initNewPlayer } from "./init-player";
 import { actOnEntities } from "../game/act-on-entities";
 import { getRandomName } from "./util/random-name";
@@ -85,7 +85,7 @@ io.on("connection", (socket: Socket) => {
     // Act on all the inputs in the buffer sent by the client.
     data.inputs.forEach((input) => {
       // TODO: Clamp delta to prevent cheating.
-      playerActOnInput(context.gameState, player, input.delta, input.input);
+      applyPlayerInput(context.gameState, player, input.delta, input.input);
     });
   });
 

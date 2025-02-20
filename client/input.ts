@@ -1,6 +1,6 @@
 import { PlayerEntity } from "../game/types";
 import { context } from "./context";
-import { playerActOnInput } from "../game/entities/player";
+import { applyPlayerInput } from "../game/entities/player";
 
 export const setupInput = () => {
   document.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -135,5 +135,5 @@ export const playerProcessInput = () => {
 
   player.bulletTrajectory = calculateBulletTrajectory(player, mousePos);
 
-  playerActOnInput(gameState, player, delta, keys);
+  applyPlayerInput(gameState, player, delta, keys);
 };

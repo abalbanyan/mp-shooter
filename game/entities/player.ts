@@ -125,7 +125,7 @@ const movePlayer = (
   moveEntity(player.pos, velocity, speed, delta);
 };
 
-export const playerActOnInput = (
+export const applyPlayerInput = (
   gameState: GameState,
   player: PlayerEntity,
   delta: number,
