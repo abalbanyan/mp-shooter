@@ -10,7 +10,8 @@ const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 270;
 const BULLET_COOLDOWN_MS = 180;
 const BULLET_COOLDOWN_WITH_POWERUP_MS = 40;
-const BULLET_DISTANCE_SPAWN = 5;
+/** How far away from the player do bullets spawn? */
+const BULLET_DISTANCE_SPAWN = 22;
 
 const BULLET_SPREAD_DEGREE = 30;
 const BULLET_SPREAD_LEFT_DEGREE = (-BULLET_SPREAD_DEGREE * Math.PI) / 180;

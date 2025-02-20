@@ -30,9 +30,9 @@ const drawTargetReticule = (
  * Must call ctx.save(); before this, and ctx.restore() before drawing background.
  */
 const applyScreenShake = (ctx: CanvasRenderingContext2D) => {
-  const intensity = 2;
-  const shakeX = (Math.random() - 0.5) * intensity * 2;
-  const shakeY = (Math.random() - 0.5) * intensity * 2;
+  const intensity = 5;
+  const shakeX = (Math.random() - 0.5) * intensity;
+  const shakeY = (Math.random() - 0.5) * intensity;
   ctx.translate(shakeX, shakeY);
 };
 
@@ -83,7 +83,7 @@ export const renderGameState = (gameState: GameState) => {
 
   // background
   ctx.fillStyle = COLORS.bg;
-  ctx.font = "12px Arial";
+  ctx.font = "10px Arial";
 
   // debug
   if (localStorage.getItem("debug")) {
