@@ -60,6 +60,7 @@ export type BulletEntity = {
   big: boolean;
   /** for simplicity, only allow bullet to teleport once for now */
   hasTeleported?: boolean;
+  hi?: boolean;
 };
 
 export type WallEntity = {
@@ -112,6 +113,7 @@ export type PlayerInput = {
   dash: boolean;
   /** normalized vector */
   bulletTrajectory?: Vector;
+  hi: boolean;
 };
 
 /**

@@ -1,6 +1,7 @@
 import { COLORS } from "../../../game/constants";
 import type { BulletEntity } from "../../../game/types";
 import { perpendiculars } from "../../../game/util/vector";
+import { HI } from "../images";
 
 const BULLET_RADIUS = 4;
 const BIG_BULLET_RADIUS = 12;
@@ -10,6 +11,11 @@ export const drawBullet = (
   bullet: BulletEntity,
   color: string
 ) => {
+  if (bullet.hi) {
+    ctx.drawImage(HI, bullet.pos.x - 10, bullet.pos.y - 10, 20 * 1.28, 20);
+    return;
+  }
+
   const radius = bullet.big ? BIG_BULLET_RADIUS : BULLET_RADIUS;
 
   ctx.beginPath();

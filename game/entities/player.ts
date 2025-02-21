@@ -182,8 +182,8 @@ export const applyPlayerInput = (
     movePlayer(player, input, delta);
   }
 
-  if (input.attack && !isReplay) {
-    initBulletOnCooldown(gameState, player);
+  if ((input.attack || input.hi) && !isReplay) {
+    initBulletOnCooldown(gameState, player, { hi: input.hi });
   }
 
   // Check if the player is nowcolliding with any walls, and clamp their position if so.

@@ -1,10 +1,16 @@
-import type { PlayerEntity, GameState, BulletEntity, Vector } from "../types";
+import type {
+  PlayerEntity,
+  GameState,
+  BulletEntity,
+  Vector,
+  PlayerInput,
+} from "../types";
 import { rayIntersectsAABB, rayIntersectsCircle } from "../util/collision";
 import { damagePlayer, PLAYER_RADIUS, playerDamageOnCooldown } from "./player";
 import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { hasPowerup } from "./powerup";
-import { perpendiculars, rotate } from "../util/vector";
+import { perpendiculars, rotate, scale } from "../util/vector";
 import { isTeleportIntersectingBullet } from "./teleport";
 
 const BULLET_DAMAGE = 1;
@@ -23,7 +29,10 @@ const BULLET_SPREAD_RIGHT_DEGREE = (BULLET_SPREAD_DEGREE * Math.PI) / 180;
  */
 export const initBulletOnCooldown = (
   gameState: GameState,
-  player: PlayerEntity
+  player: PlayerEntity,
+  bulletParams: {
+    hi: boolean;
+  }
 ) => {
   const bulletCooldown = hasPowerup(player, "BulletSpeed")
     ? BULLET_COOLDOWN_WITH_POWERUP_MS
@@ -50,6 +59,7 @@ export const initBulletOnCooldown = (
       y: player.bulletTrajectory.y,
     },
     big: hasPowerup(player, "BulletSize"),
+    hi: bulletParams.hi,
   });
 
   if (hasPowerup(player, "Spread")) {
@@ -201,7 +211,7 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
   // Check if bullet is colliding with any players.
   const players = Object.values(gameState.players);
   players.forEach((player) => {
-    if (player.id === bullet.playerId || bullet.deleted) {
+    if (player.id === bullet.playerId || bullet.deleted || bullet.hi) {
       return;
     }
     if (playerDamageOnCooldown(player)) {
@@ -226,11 +236,16 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
 };
 
 const moveBullet = (bullet: BulletEntity, delta: number) => {
-  const velocity: Vector = {
+  let velocity: Vector = {
     x: bullet.direction.x,
     y: bullet.direction.y,
   };
-  moveEntity(bullet.pos, velocity, BULLET_SPEED, delta);
+  moveEntity(
+    bullet.pos,
+    velocity,
+    bullet.hi ? BULLET_SPEED * 0.5 : BULLET_SPEED,
+    delta
+  );
 };
 
 export const bulletAct = (

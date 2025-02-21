@@ -61,3 +61,5 @@ export const TILES = {
     busted: loadImage("/walls/busted_wall_tile.png"),
   },
 };
+
+export const HI = loadImage("/hi!.png");

@@ -64,6 +64,9 @@ export const setupInput = () => {
       case 0:
         context.input.attack = true;
         break;
+      case 1:
+        context.input.hi = true;
+        break;
       case 2:
         context.input.dash = true;
         break;
@@ -74,6 +77,9 @@ export const setupInput = () => {
     switch (event.button) {
       case 0:
         context.input.attack = false;
+        break;
+      case 1:
+        context.input.hi = false;
         break;
       case 2:
         context.input.dash = false;
