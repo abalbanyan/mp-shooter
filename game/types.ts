@@ -5,6 +5,7 @@
 
 import type { PowerupType } from "../game/entities/powerup";
 import type { PickupType } from "./entities/pickup";
+import type { TeleportEntity } from "./entities/teleport";
 
 export type Vector = {
   x: number;
@@ -42,8 +43,9 @@ export type PlayerEntity = {
     normalizedDashDirection?: Vector;
     remainingDashCooldown: number;
   };
-  lastBulletFiredTimestamp?: number;
-  lastDamagedTimestamp?: number;
+  lastBulletFiredTimestamp?: number; // TODO: convert to cooldown duration
+  lastDamagedTimestamp?: number; // TODO: convert to cooldown duration
+  teleportCooldown: number;
   powerups: Record<PowerupType, { timestamp?: number }>;
 };
 
@@ -56,6 +58,8 @@ export type BulletEntity = {
   direction: Vector;
   deleted?: boolean;
   big: boolean;
+  /** for simplicity, only allow bullet to teleport once for now */
+  hasTeleported?: boolean;
 };
 
 export type WallEntity = {
@@ -74,6 +78,7 @@ export type GameState = {
   bullets: BulletEntity[];
   walls: WallEntity[];
   pickups: PickupEntity[];
+  teleports: TeleportEntity[];
   /** All scores are name -> score mappings; players are intentionally allowed to re-use names. */
   scores: Record<
     string,

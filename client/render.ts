@@ -10,6 +10,7 @@ import { drawPlayerGhostEntity } from "./rendering/entities/player-ghost";
 import { onCooldown } from "../game/util/cooldown";
 import { playerDamageOnCooldown } from "../game/entities/player";
 import { renderScoreboard } from "./rendering/scores";
+import { drawTeleport } from "./rendering/entities/teleport";
 
 const renderHTML = (gameState: GameState) => {
   renderScoreboard(gameState);
@@ -71,11 +72,8 @@ export const renderGameState = (gameState: GameState) => {
     drawWall(ctx, wall);
   });
 
-  drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
-
-  gameState.pickups.forEach((pickup) => {
-    drawPickup(ctx, pickup);
-  });
+  gameState.pickups.forEach((pickup) => drawPickup(ctx, pickup));
+  gameState.teleports.forEach((teleport) => drawTeleport(ctx, teleport));
 
   context.playerTrails.forEach((trail) => drawPlayerTrail(ctx, trail));
   context.playerGhosts.forEach((ghost) => drawPlayerGhostEntity(ctx, ghost));
@@ -85,6 +83,8 @@ export const renderGameState = (gameState: GameState) => {
   });
 
   ctx.restore();
+
+  drawTargetReticule(ctx, context.mousePos.x, context.mousePos.y);
 
   // background
   ctx.fillStyle = COLORS.bg;

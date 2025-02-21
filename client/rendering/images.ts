@@ -49,6 +49,12 @@ export const HEARTS = {
   ]),
 };
 
+export const TELEPORTS = loadImages([
+  "/teleport/teleport_1.png",
+  "/teleport/teleport_2.png",
+  "/teleport/teleport_3.png",
+]);
+
 export const TILES = {
   walls: {
     base: loadImage("/walls/base_wall_tile.png"),

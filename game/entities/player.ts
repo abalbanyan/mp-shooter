@@ -11,6 +11,10 @@ import {
   incPlayerDeathScore,
   incPlayerKillScore,
 } from "../scores";
+import {
+  isTeleportIntersectingPlayer,
+  startTeleportCooldown,
+} from "./teleport";
 
 export const PLAYER_MAX_HEALTH = 4;
 const PLAYER_SPAWN_IMMUNITY = 2000;
@@ -28,6 +32,8 @@ export const playerDamageOnCooldown = (player: PlayerEntity) =>
   onCooldown(player.lastDamagedTimestamp, PLAYER_IFRAME_DURATION_MS);
 export const dashOnCooldown = (player: PlayerEntity) =>
   player.dash.remainingDashCooldown > 0;
+export const teleportOnCooldown = (player: PlayerEntity) =>
+  player.teleportCooldown > 0;
 export const playerJustSpawned = (player: PlayerEntity) =>
   onCooldown(player.spawnTimestamp, PLAYER_SPAWN_IMMUNITY);
 
@@ -114,6 +120,18 @@ const updateDashCooldown = (player: PlayerEntity, delta: number) => {
   );
 };
 
+const updateTeleportCooldown = (player: PlayerEntity, delta: number) => {
+  if (!teleportOnCooldown(player)) {
+    return;
+  }
+  player.teleportCooldown = Math.max(0, player.teleportCooldown - delta * 1000);
+};
+
+const updateCooldown = (player: PlayerEntity, delta: number) => {
+  updateDashCooldown(player, delta);
+  updateTeleportCooldown(player, delta);
+};
+
 const movePlayer = (
   player: PlayerEntity,
   input: PlayerInput,
@@ -153,7 +171,7 @@ export const applyPlayerInput = (
 ) => {
   player.bulletTrajectory = structuredClone(input.bulletTrajectory);
 
-  updateDashCooldown(player, delta);
+  updateCooldown(player, delta);
 
   if (player.dash.isDashing) {
     progressDash(player, delta);
@@ -178,6 +196,19 @@ export const applyPlayerInput = (
     if (intersection.isIntersecting) {
       endDash(player);
       player.pos = intersection.clampTo;
+    }
+  });
+
+  gameState.teleports.forEach((teleport) => {
+    if (teleportOnCooldown(player)) {
+      return;
+    }
+    if (isTeleportIntersectingPlayer(player, teleport)) {
+      if (!isReplay) {
+        startTeleportCooldown(player);
+      }
+      console.log("teleport");
+      player.pos = structuredClone(teleport.destination);
     }
   });
 };

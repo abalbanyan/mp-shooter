@@ -135,6 +135,7 @@ export const initNewPlayer = (id: string, name?: string) => {
       BulletSize: { timestamp: undefined },
       Spread: { timestamp: undefined },
     },
+    teleportCooldown: 0,
   };
   context.lastProcessedPlayerSequenceNumbers[id] = 0;
 };

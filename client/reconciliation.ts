@@ -27,6 +27,7 @@ const applyTimestampCorrection = (
 const storeClientMyPlayerCooldowns = (clientState: GameState) => {
   const myCooldowns: Record<string, number | null> = {
     remainingDashCooldown: null,
+    teleportCooldown: null,
   };
 
   if (!context.id) return myCooldowns;
@@ -36,6 +37,7 @@ const storeClientMyPlayerCooldowns = (clientState: GameState) => {
   if (!myPlayerClient) return myCooldowns;
 
   myCooldowns.remainingDashCooldown = myPlayerClient.dash.remainingDashCooldown;
+  myCooldowns.teleportCooldown = myPlayerClient.teleportCooldown;
 
   return myCooldowns;
 };
@@ -69,6 +71,7 @@ export const updateClientGameState = ({
   clientState.bullets = structuredClone(serverState.bullets);
   clientState.walls = structuredClone(serverState.walls);
   clientState.pickups = structuredClone(serverState.pickups);
+  clientState.teleports = structuredClone(serverState.teleports);
 
   // Find removed players, assume they've died, and remove them while spawning a ghost animation. TODO: Some onPlayerDeath function
   Object.values(clientState.players).forEach((clientPlayer) => {
@@ -129,11 +132,14 @@ export const updateClientGameState = ({
     );
   }
 
-  if (
-    clientState.players[context.id] &&
-    myCooldowns.remainingDashCooldown !== null
-  ) {
-    clientState.players[context.id].dash.remainingDashCooldown =
-      myCooldowns.remainingDashCooldown;
+  if (clientState.players[context.id]) {
+    if (myCooldowns.remainingDashCooldown !== null) {
+      clientState.players[context.id].dash.remainingDashCooldown =
+        myCooldowns.remainingDashCooldown;
+    }
+    if (myCooldowns.teleportCooldown !== null) {
+      clientState.players[context.id].teleportCooldown =
+        myCooldowns.teleportCooldown;
+    }
   }
 };

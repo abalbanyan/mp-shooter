@@ -5,6 +5,7 @@ import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { hasPowerup } from "./powerup";
 import { perpendiculars, rotate } from "../util/vector";
+import { isTeleportIntersectingBullet } from "./teleport";
 
 const BULLET_DAMAGE = 1;
 const BULLET_SPEED = 270;
@@ -210,6 +211,16 @@ const bulletCollision = (gameState: GameState, bullet: BulletEntity) => {
       deleteBullet(bullet);
       cleanupDeletedBullets(gameState);
       damagePlayer(gameState, player, BULLET_DAMAGE, bullet.playerId);
+    }
+  });
+
+  gameState.teleports.forEach((teleport) => {
+    if (bullet.hasTeleported) {
+      return;
+    }
+    if (isTeleportIntersectingBullet(bullet, teleport)) {
+      bullet.hasTeleported = true;
+      bullet.pos = structuredClone(teleport.destination);
     }
   });
 };
