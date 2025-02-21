@@ -3,6 +3,8 @@ import { createServer } from "http";
 import path from "path";
 import { Server as SocketIOServer, Socket } from "socket.io";
 
+import "dotenv/config";
+
 import type {
   GetSuggestedNameResponse,
   IOMessageInput,
@@ -16,6 +18,7 @@ import { actOnEntities } from "../game/act-on-entities";
 import { getRandomName } from "./util/random-name";
 import { SERVER_TICK_RATE } from "../game/constants";
 import { resetScores, resetScoresForPlayer } from "../game/scores";
+import { sendPushNotificationNewPlayerJoined } from "./pushover";
 
 const app = express();
 const httpServer = createServer(app);
@@ -114,6 +117,11 @@ io.on("connection", (socket: Socket) => {
   socket.on("playerJoin", (data: IOMessagePlayerJoin) => {
     initNewPlayer(socket.id, data.name);
     broadcastStateUpdate();
+
+    // Sending myself a notification for now to see if people are playing. :)
+    sendPushNotificationNewPlayerJoined(
+      context.gameState.players[socket.id].name
+    );
   });
 });
 

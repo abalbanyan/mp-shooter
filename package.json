@@ -22,7 +22,9 @@
     "vite": "^6.1.0"
   },
   "dependencies": {
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "pushover-notifications": "^1.2.3",
     "socket.io": "^4.8.1",
     "socket.io-client": "^4.8.1",
     "unique-names-generator": "^4.7.1"

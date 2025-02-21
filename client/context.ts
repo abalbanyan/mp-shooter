@@ -73,6 +73,7 @@ export const context: ClientContext = {
     right: false,
     attack: false,
     dash: false,
+    hi: false,
     bulletTrajectory: undefined,
   },
 
