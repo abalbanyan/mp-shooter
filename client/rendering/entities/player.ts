@@ -6,8 +6,12 @@ import {
   PLAYER_RADIUS,
   playerIsImmune,
 } from "../../../game/entities/player";
+import { hasPowerup } from "../../../game/entities/powerup";
 import { PlayerEntity } from "../../../game/types";
+import { perpendiculars, rotate } from "../../../game/util/vector";
 import { drawHealth } from "./health";
+
+const fifteenDegreesInRadians = (15 * Math.PI) / 180;
 
 /** Maybe this needs to be another entity? */
 const drawPlayerDashCooldownBar = (
@@ -36,19 +40,49 @@ const drawPlayerBulletTrajectoryIndicator = (
 
   ctx.lineWidth = 3;
 
-  const bulletTrajectoryStart = 11;
-  const bulletTrajectoryEnd = 26;
+  const hasBigBullet = hasPowerup(player, "BulletSize");
+  const hasSpread = hasPowerup(player, "Spread");
+  const hasBulletSpeed = hasPowerup(player, "BulletSpeed");
+
+  const gap = hasBigBullet ? 6 : 3;
+  const bulletTrajectoryStart = hasBigBullet ? 8 : 10;
+  const bulletTrajectoryEnd = 21;
+
+  const [{ x: perpX, y: perpY }] = perpendiculars(player.bulletTrajectory);
+
+  const leftTraj = hasSpread
+    ? rotate(player.bulletTrajectory, -fifteenDegreesInRadians)
+    : player.bulletTrajectory;
+  const rightTraj = hasSpread
+    ? rotate(player.bulletTrajectory, fifteenDegreesInRadians)
+    : player.bulletTrajectory;
+
+  const offsetX = perpX * gap;
+  const offsetY = perpY * gap;
 
   ctx.beginPath();
-  ctx.strokeStyle = player.color;
+  ctx.strokeStyle = hasBulletSpeed ? COLORS.fireRate : player.color;
+
+  // Left line
   ctx.moveTo(
-    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryStart,
-    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryStart
+    player.pos.x + leftTraj.x * bulletTrajectoryStart - offsetX,
+    player.pos.y + leftTraj.y * bulletTrajectoryStart - offsetY
   );
   ctx.lineTo(
-    player.pos.x + player.bulletTrajectory.x * bulletTrajectoryEnd,
-    player.pos.y + player.bulletTrajectory.y * bulletTrajectoryEnd
+    player.pos.x + leftTraj.x * bulletTrajectoryEnd - offsetX,
+    player.pos.y + leftTraj.y * bulletTrajectoryEnd - offsetY
   );
+
+  // Right line
+  ctx.moveTo(
+    player.pos.x + rightTraj.x * bulletTrajectoryStart + offsetX,
+    player.pos.y + rightTraj.y * bulletTrajectoryStart + offsetY
+  );
+  ctx.lineTo(
+    player.pos.x + rightTraj.x * bulletTrajectoryEnd + offsetX,
+    player.pos.y + rightTraj.y * bulletTrajectoryEnd + offsetY
+  );
+
   ctx.stroke();
 };
 

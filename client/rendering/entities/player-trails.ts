@@ -1,3 +1,4 @@
+import { hasPowerup } from "../../../game/entities/powerup";
 import type { PlayerEntity, Vector } from "../../../game/types";
 import { onCooldown } from "../../../game/util/cooldown";
 import { context } from "../../context";
@@ -31,7 +32,7 @@ export const createPlayerTrailsForPlayers = (players: PlayerEntity[]) => {
   players.forEach((player) => {
     context.playerTrails.push({
       pos: player.pos,
-      color: player.color,
+      color: hasPowerup(player, "Speed") ? "#e39950" : player.color,
       playerId: player.id,
       spawnedAt: Date.now(),
     });

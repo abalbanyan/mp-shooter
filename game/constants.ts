@@ -4,6 +4,7 @@ export const COLORS = {
   walls: "#c3c3c3",
   cooldownBar: "#c3c3c3",
   target: "#d9386a",
+  fireRate: "#e5533a",
   playerColors: [
     "#3e7687", // green
     "#83c9e5", // blue

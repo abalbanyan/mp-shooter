@@ -35,11 +35,11 @@ export const drawBullet = (
     };
     ctx.beginPath();
     ctx.arc(leftRayPos.x, leftRayPos.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = COLORS.target;
     ctx.fill();
     ctx.beginPath();
     ctx.arc(rightRayPos.x, rightRayPos.y, 3, 0, Math.PI * 2);
-    ctx.fillStyle = "red";
+    ctx.fillStyle = COLORS.target;
     ctx.fill();
     console.log(bullet.pos);
     console.log(rightRayPos);
