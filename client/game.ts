@@ -12,7 +12,7 @@ import { cleanupPlayerGhosts } from "./rendering/entities/player-ghost";
 import { pushGameStateBuffer } from "./rendering/interpolation";
 import { setupModals } from "./modals";
 import { updateClientGameState } from "./reconciliation";
-import { setupSound } from "./sound";
+import { setupSound, soundContext } from "./sound";
 import { CLIENT_TICK_RATE } from "../game/constants";
 
 setupSound();
@@ -22,6 +22,7 @@ const socket = io();
 socket.on("connect", () => {
   if (socket.id) {
     context.id = socket.id;
+    soundContext.playerId = context.id;
     requestAnimationFrame(gameLoop);
     setupModals(socket);
 

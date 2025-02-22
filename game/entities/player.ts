@@ -5,7 +5,12 @@ import { moveEntity } from "../util/move-entity";
 import { onCooldown } from "../util/cooldown";
 import { magnitude } from "../util/vector";
 import { hasPowerup } from "./powerup";
-import { playBulletHitOtherPlayer } from "../../client/sound";
+import {
+  playBulletFire,
+  playBulletHit,
+  playDeathSound,
+  playTeleportSound,
+} from "../../client/sound";
 import {
   incPlayerDamageScore,
   incPlayerDeathScore,
@@ -52,12 +57,14 @@ export const damagePlayer = (
     return;
   }
 
-  playBulletHitOtherPlayer();
-
   player.health -= damage;
   player.lastDamagedTimestamp = Date.now();
   if (player.health <= 0) {
     player.dead = true;
+  }
+
+  if (attackerId) {
+    playBulletHit(attackerId, player.id);
   }
 
   // Adjust scores if there was an attacker.
@@ -65,6 +72,7 @@ export const damagePlayer = (
     const attacker = gameState.players[attackerId];
     incPlayerDamageScore(gameState, attacker, damage);
     if (player.dead) {
+      playDeathSound();
       incPlayerKillScore(gameState, attacker);
       incPlayerDeathScore(gameState, player);
     }
@@ -183,6 +191,7 @@ export const applyPlayerInput = (
   }
 
   if ((input.attack || input.hi) && !isReplay) {
+    playBulletFire();
     initBulletOnCooldown(gameState, player, { hi: input.hi });
   }
 
@@ -208,6 +217,7 @@ export const applyPlayerInput = (
         startTeleportCooldown(player);
       }
       console.log("teleport");
+      playTeleportSound(player.id);
       player.pos = structuredClone(teleport.destination);
     }
   });

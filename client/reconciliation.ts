@@ -76,6 +76,7 @@ export const updateClientGameState = ({
   // Find removed players, assume they've died, and remove them while spawning a ghost animation. TODO: Some onPlayerDeath function
   Object.values(clientState.players).forEach((clientPlayer) => {
     if (!serverState.players[clientPlayer.id]) {
+      // TODO: onPlayerDeath func
       spawnPlayerGhost(clientPlayer);
       delete clientState.players[clientPlayer.id];
       if (clientPlayer.id === context.id) {
