@@ -124,6 +124,8 @@ export const isBulletIntersectingPlayerPos = (
   playerPos: Vector,
   bullet: BulletEntity
 ) => {
+  const bulletRayLength = PLAYER_RADIUS;
+
   // We want to raycast two additional casts, shifted left and right of the bullet.
   if (bullet.big) {
     const [left, right] = perpendiculars(bullet.direction);
@@ -139,7 +141,7 @@ export const isBulletIntersectingPlayerPos = (
       rayIntersectsCircle(
         leftRayPos,
         bullet.direction,
-        30,
+        bulletRayLength + 10,
         playerPos,
         PLAYER_RADIUS
       )
@@ -150,7 +152,7 @@ export const isBulletIntersectingPlayerPos = (
       rayIntersectsCircle(
         rightRayPos,
         bullet.direction,
-        30,
+        bulletRayLength + 10,
         playerPos,
         PLAYER_RADIUS
       )
@@ -161,7 +163,7 @@ export const isBulletIntersectingPlayerPos = (
       rayIntersectsCircle(
         bullet.pos,
         bullet.direction,
-        30,
+        bulletRayLength + 10,
         playerPos,
         PLAYER_RADIUS
       )
@@ -172,7 +174,7 @@ export const isBulletIntersectingPlayerPos = (
     return rayIntersectsCircle(
       bullet.pos,
       bullet.direction,
-      20,
+      bulletRayLength,
       playerPos,
       PLAYER_RADIUS
     );
