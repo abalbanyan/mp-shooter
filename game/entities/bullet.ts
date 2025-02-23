@@ -79,6 +79,7 @@ export const initBulletOnCooldown = (
         y: leftTrajectory.y,
       },
       big: hasPowerup(player, "BulletSize"),
+      hi: bulletParams.hi,
     });
 
     const rightTrajectory = rotate(
@@ -97,6 +98,7 @@ export const initBulletOnCooldown = (
         y: rightTrajectory.y,
       },
       big: hasPowerup(player, "BulletSize"),
+      hi: bulletParams.hi,
     });
   }
 };
