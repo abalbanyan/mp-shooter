@@ -51,7 +51,9 @@ export const renderGameState = (gameState: GameState) => {
 
   if (!ctx) return;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Using DPR here fixes a bug with the whole canvas not being cleared since we scaled it using dpr earlier in resizeCanvas()
+  const dpr = window.devicePixelRatio || 1;
+  ctx.clearRect(0, 0, canvas.width / dpr, canvas.height / dpr);
 
   ctx.save();
 
